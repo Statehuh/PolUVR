@@ -1,4 +1,5 @@
 import os
+import sys
 import torch
 import shutil
 import logging
@@ -614,7 +615,12 @@ with gr.Blocks(
     )
 
 def main():
-    app.launch(share=True, debug=True)
+    app.queue().launch(
+        share="--share" in sys.argv,
+        inbrowser="--open" in sys.argv,
+        debug=True,
+        show_error=True,
+    )
 
 if __name__ == "__main__":
     main()

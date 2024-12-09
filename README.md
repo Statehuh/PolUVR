@@ -157,8 +157,14 @@ python -m pip install ort-nightly-gpu --index-url=https://aiinfra.pkgs.visualstu
 ### Gradio Interface
 
 ```sh
-audio-separator-app
+usage: audio-separator-app [--share] [--open]
+
+Params:
+  --share                  Opens public access to the interface (for servers, Google Colab, Kaggle, etc.).
+  --open                   Automatically opens the interface in a new browser tab.
+
 ```
+
 Once the following output message `Running on local URL:  http://127.0.0.1:7860` or `Running on public URL: https://28425b3eb261b9ddc6.gradio.live` appears, you can click on the link to open a tab with the WebUI.
 
 ### Command Line Interface (CLI)

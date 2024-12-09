@@ -17,7 +17,7 @@ def main():
 
     parser.add_argument("audio_files", nargs="*", help="The audio file paths to separate, in any common format.", default=argparse.SUPPRESS)
 
-    package_version = metadata.distribution("audio-separator").version
+    package_version = metadata.distribution("audio-separator-ui").version
 
     version_help = "Show the program's version number and exit."
     debug_help = "Enable debug logging, equivalent to --log_level=debug."
