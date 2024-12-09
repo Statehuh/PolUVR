@@ -5,7 +5,7 @@
 [![Docker pulls](https://img.shields.io/docker/pulls/beveradb/audio-separator.svg)](https://hub.docker.com/r/beveradb/audio-separator/tags)
 [![codecov](https://codecov.io/gh/karaokenerds/python-audio-separator/graph/badge.svg?token=N7YK4ET5JP)](https://codecov.io/gh/karaokenerds/python-audio-separator)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/blane187gt/audio-separator-colab-work/blob/main/audio_separator_Colab_work.ipynb)
-[![Open In Huggingface](https://huggingface.co/datasets/huggingface/badges/resolve/main/open-in-hf-spaces-md.svg)](https://huggingface.co/spaces/theneos/audio-separator)
+[![Open In Huggingface](https://huggingface.co/datasets/huggingface/badges/resolve/main/open-in-hf-spaces-sm.svg)](https://huggingface.co/spaces/Politrees/PolUVR)
 
 **Summary:** Easy to use audio stem separation from the command line or as a dependency in your own Python project, using the amazing MDX-Net, VR Arch, Demucs and MDXC models available in UVR by @Anjok07 & @aufr33.
 
@@ -57,7 +57,7 @@ conda install pytorch=*=*cuda* onnxruntime=*=*cuda* audio-separator -c pytorch -
 
 Pip:
 ```sh
-pip install "audio-separator[gpu]"
+pip install "audio-separator-ui[gpu]"
 ```
 
 Docker:
@@ -72,7 +72,7 @@ beveradb/audio-separator:gpu
 
 Pip:
 ```sh
-pip install "audio-separator[cpu]"
+pip install "audio-separator-ui[cpu]"
 ```
 
 ### 🐢 No hardware acceleration, CPU only
@@ -84,7 +84,7 @@ conda install audio-separator-c pytorch -c conda-forge
 
 Pip:
 ```sh
-pip install "audio-separator[cpu]"
+pip install "audio-separator-ui[cpu]"
 ```
 
 Docker:
