@@ -349,78 +349,24 @@ class Separator:
         model_downloads_list = json.load(open(download_checks_path, encoding="utf-8"))
         self.logger.debug(f"UVR model download list loaded")
 
-        # model_downloads_list JSON structure / example snippet:
-        # {
-        #     "vr_download_list": {
-        #             "VR Arch Single Model v5: 1_HP-UVR": "1_HP-UVR.pth",
-        #             "VR Arch Single Model v5: UVR-DeNoise by FoxJoy": "UVR-DeNoise.pth",
-        #     },
-        #     "mdx_download_list": {
-        #             "MDX-Net Model: UVR-MDX-NET Inst HQ 3": "UVR-MDX-NET-Inst_HQ_3.onnx",
-        #             "MDX-Net Model: UVR-MDX-NET Karaoke 2": "UVR_MDXNET_KARA_2.onnx",
-        #             "MDX-Net Model: Kim Vocal 2": "Kim_Vocal_2.onnx",
-        #             "MDX-Net Model: kuielab_b_drums": "kuielab_b_drums.onnx"
-        #     },
-        #     "demucs_download_list": {
-        #             "Demucs v4: htdemucs_ft": {
-        #                     "f7e0c4bc-ba3fe64a.th": "https://dl.fbaipublicfiles.com/demucs/hybrid_transformer/f7e0c4bc-ba3fe64a.th",
-        #                     "d12395a8-e57c48e6.th": "https://dl.fbaipublicfiles.com/demucs/hybrid_transformer/d12395a8-e57c48e6.th",
-        #                     "92cfc3b6-ef3bcb9c.th": "https://dl.fbaipublicfiles.com/demucs/hybrid_transformer/92cfc3b6-ef3bcb9c.th",
-        #                     "04573f0d-f3cf25b2.th": "https://dl.fbaipublicfiles.com/demucs/hybrid_transformer/04573f0d-f3cf25b2.th",
-        #                     "htdemucs_ft.yaml": "https://github.com/TRvlvr/model_repo/releases/download/all_public_uvr_models/htdemucs_ft.yaml"
-        #             },
-        #             "Demucs v4: htdemucs": {
-        #                     "955717e8-8726e21a.th": "https://dl.fbaipublicfiles.com/demucs/hybrid_transformer/955717e8-8726e21a.th",
-        #                     "htdemucs.yaml": "https://github.com/TRvlvr/model_repo/releases/download/all_public_uvr_models/htdemucs.yaml"
-        #             },
-        #             "Demucs v1: tasnet": {
-        #                     "tasnet.th": "https://dl.fbaipublicfiles.com/demucs/v2.0/tasnet.th"
-        #             },
-        #     },
-        #     "mdx23_download_list": {
-        #             "MDX23C Model: MDX23C_D1581": {
-        #                     "MDX23C_D1581.ckpt": "model_2_stem_061321.yaml"
-        #             }
-        #     },
-        #     "mdx23c_download_list": {
-        #             "MDX23C Model: MDX23C-InstVoc HQ": {
-        #                     "MDX23C-8KFFT-InstVoc_HQ.ckpt": "model_2_stem_full_band_8k.yaml"
-        #             }
-        #     },
-        #     "roformer_download_list": {
-        #             "Roformer Model: BS-Roformer-Viperx-1297": {
-        #                     "model_bs_roformer_ep_317_sdr_12.9755.ckpt": "model_bs_roformer_ep_317_sdr_12.9755.yaml"
-        #             },
-        #             "Roformer Model: BS-Roformer-Viperx-1296": {
-        #                     "model_bs_roformer_ep_368_sdr_12.9628.ckpt": "model_bs_roformer_ep_368_sdr_12.9628.yaml"
-        #             },
-        #             "Roformer Model: BS-Roformer-Viperx-1053": {
-        #                     "model_bs_roformer_ep_937_sdr_10.5309.ckpt": "model_bs_roformer_ep_937_sdr_10.5309.yaml"
-        #             },
-        #             "Roformer Model: Mel-Roformer-Viperx-1143": {
-        #                     "model_mel_band_roformer_ep_3005_sdr_11.4360.ckpt": "model_mel_band_roformer_ep_3005_sdr_11.4360.yaml"
-        #             }
-        #     },
-        # }
-
         # Only show Demucs v4 models as we've only implemented support for v4
         filtered_demucs_v4 = {key: value for key, value in model_downloads_list["demucs_download_list"].items() if key.startswith("Demucs v4")}
 
         # Load the JSON file using importlib.resources
         with resources.open_text("PolUVR", "models.json") as f:
-            audio_separator_models_list = json.load(f)
+            PolUVR_models_list = json.load(f)
         self.logger.debug(f"PolUVR model list loaded")
 
         # Return object with list of model names, which are the keys in vr_download_list, mdx_download_list, demucs_download_list, mdx23_download_list, mdx23c_download_list, grouped by type: VR, MDX, Demucs, MDX23, MDX23C
         model_files_grouped_by_type = {
-            "VR": {**model_downloads_list["vr_download_list"], **audio_separator_models_list["vr_download_list"]},
-            "MDX": {**model_downloads_list["mdx_download_list"], **model_downloads_list["mdx_download_vip_list"], **audio_separator_models_list["mdx_download_list"]},
+            "VR": {**model_downloads_list["vr_download_list"], **PolUVR_models_list["vr_download_list"]},
+            "MDX": {**model_downloads_list["mdx_download_list"], **model_downloads_list["mdx_download_vip_list"], **PolUVR_models_list["mdx_download_list"]},
             "Demucs": filtered_demucs_v4,
             "MDXC": {
                 **model_downloads_list["mdx23c_download_list"],
                 **model_downloads_list["mdx23c_download_vip_list"],
                 **model_downloads_list["roformer_download_list"],
-                **audio_separator_models_list["roformer_download_list"],
+                **PolUVR_models_list["roformer_download_list"],
             },
         }
         return model_files_grouped_by_type
@@ -443,7 +389,7 @@ class Separator:
         public_model_repo_url_prefix = "https://github.com/TRvlvr/model_repo/releases/download/all_public_uvr_models"
         vip_model_repo_url_prefix = "https://github.com/Anjok0109/ai_magic/releases/download/v5"
 
-        audio_separator_models_repo_url_prefix = "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs"
+        PolUVR_models_repo_url_prefix = "https://github.com/Bebra777228/PolUVR/releases/download/model-configs"
 
         yaml_config_filename = None
 
@@ -462,7 +408,7 @@ class Separator:
                         self.download_file_if_not_exists(f"{model_repo_url_prefix}/{model_filename}", model_path)
                     except RuntimeError:
                         self.logger.debug("Model not found in UVR repo, attempting to download from PolUVR models repo...")
-                        self.download_file_if_not_exists(f"{audio_separator_models_repo_url_prefix}/{model_filename}", model_path)
+                        self.download_file_if_not_exists(f"{PolUVR_models_repo_url_prefix}/{model_filename}", model_path)
 
                     self.print_uvr_vip_message()
 
@@ -499,7 +445,7 @@ class Separator:
                                     self.download_file_if_not_exists(download_url, os.path.join(self.model_file_dir, config_key))
                                 except RuntimeError:
                                     self.logger.debug("Model not found in UVR repo, attempting to download from PolUVR models repo...")
-                                    download_url = f"{audio_separator_models_repo_url_prefix}/{config_key}"
+                                    download_url = f"{PolUVR_models_repo_url_prefix}/{config_key}"
                                     self.download_file_if_not_exists(download_url, os.path.join(self.model_file_dir, config_key))
 
                                 # In case the user specified the YAML filename as the model input instead of the model filename, correct that
@@ -521,7 +467,7 @@ class Separator:
                                     self.download_file_if_not_exists(f"{yaml_config_url}", yaml_config_filepath)
                                 except RuntimeError:
                                     self.logger.debug("Model YAML config file not found in UVR repo, attempting to download from PolUVR models repo...")
-                                    yaml_config_url = f"{audio_separator_models_repo_url_prefix}/{yaml_config_filename}"
+                                    yaml_config_url = f"{PolUVR_models_repo_url_prefix}/{yaml_config_filename}"
                                     self.download_file_if_not_exists(f"{yaml_config_url}", yaml_config_filepath)
 
                             # MDX and VR models have config_value set to the model filename
@@ -585,81 +531,6 @@ class Separator:
         self.logger.debug("Loading MDX and VR model parameters from UVR model data files...")
         vr_model_data_object = json.load(open(vr_model_data_path, encoding="utf-8"))
         mdx_model_data_object = json.load(open(mdx_model_data_path, encoding="utf-8"))
-
-        # vr_model_data_object JSON structure / example snippet:
-        # {
-        #     "0d0e6d143046b0eecc41a22e60224582": {
-        #         "vr_model_param": "3band_44100_mid",
-        #         "primary_stem": "Instrumental"
-        #     },
-        #     "6b5916069a49be3fe29d4397ecfd73fa": {
-        #         "vr_model_param": "3band_44100_msb2",
-        #         "primary_stem": "Instrumental",
-        #         "is_karaoke": true
-        #     },
-        #     "0ec76fd9e65f81d8b4fbd13af4826ed8": {
-        #         "vr_model_param": "4band_v3",
-        #         "primary_stem": "No Woodwinds"
-        #     },
-        #     "0fb9249ffe4ffc38d7b16243f394c0ff": {
-        #         "vr_model_param": "4band_v3",
-        #         "primary_stem": "No Reverb"
-        #     },
-        #     "6857b2972e1754913aad0c9a1678c753": {
-        #         "vr_model_param": "4band_v3",
-        #         "primary_stem": "No Echo",
-        #         "nout": 48,
-        #         "nout_lstm": 128
-        #     },
-        #     "944950a9c5963a5eb70b445d67b7068a": {
-        #         "vr_model_param": "4band_v3_sn",
-        #         "primary_stem": "Vocals",
-        #         "nout": 64,
-        #         "nout_lstm": 128,
-        #         "is_karaoke": false,
-        #         "is_bv_model": true,
-        #         "is_bv_model_rebalanced": 0.9
-        #     }
-        # }
-
-        # mdx_model_data_object JSON structure / example snippet:
-        # {
-        #     "0ddfc0eb5792638ad5dc27850236c246": {
-        #         "compensate": 1.035,
-        #         "mdx_dim_f_set": 2048,
-        #         "mdx_dim_t_set": 8,
-        #         "mdx_n_fft_scale_set": 6144,
-        #         "primary_stem": "Vocals"
-        #     },
-        #     "26d308f91f3423a67dc69a6d12a8793d": {
-        #         "compensate": 1.035,
-        #         "mdx_dim_f_set": 2048,
-        #         "mdx_dim_t_set": 9,
-        #         "mdx_n_fft_scale_set": 8192,
-        #         "primary_stem": "Other"
-        #     },
-        #     "2cdd429caac38f0194b133884160f2c6": {
-        #         "compensate": 1.045,
-        #         "mdx_dim_f_set": 3072,
-        #         "mdx_dim_t_set": 8,
-        #         "mdx_n_fft_scale_set": 7680,
-        #         "primary_stem": "Instrumental"
-        #     },
-        #     "2f5501189a2f6db6349916fabe8c90de": {
-        #         "compensate": 1.035,
-        #         "mdx_dim_f_set": 2048,
-        #         "mdx_dim_t_set": 8,
-        #         "mdx_n_fft_scale_set": 6144,
-        #         "primary_stem": "Vocals",
-        #         "is_karaoke": true
-        #     },
-        #     "2154254ee89b2945b97a7efed6e88820": {
-        #         "config_yaml": "model_2_stem_061321.yaml"
-        #     },
-        #     "116f6f9dabb907b53d847ed9f7a9475f": {
-        #         "config_yaml": "model_2_stem_full_band_8k.yaml"
-        #     }
-        # }
 
         if model_hash in mdx_model_data_object:
             model_data = mdx_model_data_object[model_hash]
