@@ -23,9 +23,6 @@
         },
         "Roformer Model: MelBand Roformer Kim | Inst V1 (E) by Unwa": {
             "melband_roformer_inst_v1e.ckpt": "config_melbandroformer_inst.yaml"
-        },
-        "Roformer Model: MelBand Roformer Kim | FT by Unwa": {
-            "kimmel_unwa_ft.ckpt": "config_kimmel_unwa_ft.yaml"
         }
     }
 }
