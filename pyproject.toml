@@ -3,21 +3,18 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
-name = "audio-separator-ui"
-version = "0.25.0"
+name = "PolUVR"
+version = "1.0.4"
 description = "Easy to use audio stem separation with a UI, using various models from UVR trained primarily by @Anjok07"
-authors = [
-    "Andrew Beveridge <andrew@beveridge.uk>",
-    "Politrees <artyom.0.bebroy@gmail.com>"
-]
+authors = ["Politrees <artyom.0.bebroy@gmail.com>"]
 license = "MIT"
 readme = "README.md"
-packages = [{include = "audio_separator"}]
-include = ["audio_separator/separator/models.json"]
-homepage = "https://github.com/Bebra777228/Audio-Separator-UI"
-repository = "https://github.com/Bebra777228/Audio-Separator-UI"
-documentation = "https://github.com/Bebra777228/Audio-Separator-UI/blob/main/README.md"
-keywords = ["audio", "sound", "karaoke", "ui"]
+packages = [{include = "PolUVR"}]
+include = ["PolUVR/separator/models.json"]
+homepage = "https://github.com/Bebra777228/PolUVR"
+repository = "https://github.com/Bebra777228/PolUVR"
+documentation = "https://github.com/Bebra777228/PolUVR/blob/main/README.md"
+keywords = ["audio", "sound", "karaoke"]
 classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
@@ -37,7 +34,7 @@ numpy = ">=1.23,<2"
 librosa = ">=0.10"
 samplerate = "0.1.0"
 six = ">=1.16"
-torch = ">=2.3,<2.5"
+torch = "*"
 tqdm = "*"
 pydub = ">=0.25"
 onnx = ">=1.14"
@@ -61,8 +58,9 @@ cpu = ["onnxruntime"]
 gpu = ["onnxruntime-gpu"]
 
 [tool.poetry.scripts]
-audio-separator = 'audio_separator.utils.cli:main'
-audio-separator-app = 'audio_separator.utils.app:main'
+PolUVR = 'PolUVR.utils.cli:main'
+PolUVR-app = 'PolUVR.utils.app:main'
+PolUVR-ffmpeg = 'tools.install_ffmpeg:main'
 
 [tool.poetry.group.dev.dependencies]
 pytest = "*"
