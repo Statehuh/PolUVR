@@ -39,11 +39,8 @@
         "Roformer Model: MelBand Roformer | DeReverb Aggr by Anvuew": {
             "dereverb_mel_band_roformer_less_aggressive_anvuew_sdr_18.8050.ckpt": "dereverb_mel_band_roformer_anvuew.yaml"
         },
-        "Roformer Model: MelBand Roformer | DeReverb-DeEcho v1 by Sucial": {
+        "Roformer Model: MelBand Roformer | DeReverb-DeEcho by Sucial": {
             "dereverb-echo_mel_band_roformer_sdr_10.0169.ckpt": "config_dereverb-echo_mel_band_roformer.yaml"
-        },
-        "Roformer Model: MelBand Roformer | DeReverb-DeEcho v2 by Sucial": {
-            "dereverb_echo_mbr_v2_sdr_dry_13.4843.ckpt": "config_dereverb_echo_mbr_v2.yaml"
         }
     }
 }
