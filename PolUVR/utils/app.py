@@ -29,12 +29,12 @@ ROFORMER_MODELS = {
     'MelBand Roformer | Aspiration Aggr - by Sucial': 'aspiration_mel_band_roformer_less_aggr_sdr_18.1201.ckpt',
     'MelBand Roformer | DeReverb - by Anvuew': 'dereverb_mel_band_roformer_anvuew_sdr_19.1729.ckpt',
     'MelBand Roformer | DeReverb Aggr - by Anvuew': 'dereverb_mel_band_roformer_less_aggressive_anvuew_sdr_18.8050.ckpt',
-    'MelBand Roformer | DeReverb-DeEcho v1 - by Sucial': 'dereverb-echo_mel_band_roformer_sdr_10.0169.ckpt',
-    'MelBand Roformer | DeReverb-DeEcho v2 - by Sucial': 'dereverb_echo_mbr_v2_sdr_dry_13.4843.ckpt',
+    'MelBand Roformer | DeReverb-DeEcho - by Sucial': 'dereverb-echo_mel_band_roformer_sdr_10.0169.ckpt',
     'MelBand Roformer Kim | Inst V1 - by Unwa': 'melband_roformer_inst_v1.ckpt',
     'MelBand Roformer Kim | Inst V1 (E) - by Unwa': 'melband_roformer_inst_v1e.ckpt',
     'MelBand Roformer Kim | Inst V2 - by Unwa': 'melband_roformer_inst_v2.ckpt',
-    'MelBand Roformer Kim | InstVoc Duality - by Unwa': 'melband_roformer_instvoc_duality_v1.ckpt',
+    'MelBand Roformer Kim | InstVoc Duality V1 - by Unwa': 'melband_roformer_instvoc_duality_v1.ckpt',
+    'MelBand Roformer Kim | InstVoc Duality V2 - by Unwa': 'melband_roformer_instvox_duality_v2.ckpt',
 }
 #=========================#
 #      MDX23C Models      #
