@@ -359,13 +359,21 @@ class Separator:
 
         # Return object with list of model names, which are the keys in vr_download_list, mdx_download_list, demucs_download_list, mdx23_download_list, mdx23c_download_list, grouped by type: VR, MDX, Demucs, MDX23, MDX23C
         model_files_grouped_by_type = {
-            "VR": {**model_downloads_list["vr_download_list"], **PolUVR_models_list["vr_download_list"]},
-            "MDX": {**model_downloads_list["mdx_download_list"], **model_downloads_list["mdx_download_vip_list"], **PolUVR_models_list["mdx_download_list"]},
+            "VR": {
+                **model_downloads_list["vr_download_list"],
+                **PolUVR_models_list["vr_download_list"],
+            },
+            "MDX": {
+                **model_downloads_list["mdx_download_list"],
+                **model_downloads_list["mdx_download_vip_list"],
+                **PolUVR_models_list["mdx_download_list"],
+            },
             "Demucs": filtered_demucs_v4,
             "MDXC": {
                 **model_downloads_list["mdx23c_download_list"],
                 **model_downloads_list["mdx23c_download_vip_list"],
                 **model_downloads_list["roformer_download_list"],
+                **PolUVR_models_list["mdx23c_download_list"],
                 **PolUVR_models_list["roformer_download_list"],
             },
         }
@@ -389,7 +397,7 @@ class Separator:
         public_model_repo_url_prefix = "https://github.com/TRvlvr/model_repo/releases/download/all_public_uvr_models"
         vip_model_repo_url_prefix = "https://github.com/Anjok0109/ai_magic/releases/download/v5"
 
-        PolUVR_models_repo_url_prefix = "https://github.com/Bebra777228/PolUVR/releases/download/model-configs"
+        audio_separator_models_repo_url_prefix = "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs"
 
         yaml_config_filename = None
 
@@ -407,8 +415,8 @@ class Separator:
                     try:
                         self.download_file_if_not_exists(f"{model_repo_url_prefix}/{model_filename}", model_path)
                     except RuntimeError:
-                        self.logger.debug("Model not found in UVR repo, attempting to download from PolUVR models repo...")
-                        self.download_file_if_not_exists(f"{PolUVR_models_repo_url_prefix}/{model_filename}", model_path)
+                        self.logger.debug("Model not found in UVR repo, attempting to download from audio-separator models repo...")
+                        self.download_file_if_not_exists(f"{audio_separator_models_repo_url_prefix}/{model_filename}", model_path)
 
                     self.print_uvr_vip_message()
 
@@ -444,8 +452,8 @@ class Separator:
                                     download_url = f"{model_repo_url_prefix}/{config_key}"
                                     self.download_file_if_not_exists(download_url, os.path.join(self.model_file_dir, config_key))
                                 except RuntimeError:
-                                    self.logger.debug("Model not found in UVR repo, attempting to download from PolUVR models repo...")
-                                    download_url = f"{PolUVR_models_repo_url_prefix}/{config_key}"
+                                    self.logger.debug("Model not found in UVR repo, attempting to download from audio-separator models repo...")
+                                    download_url = f"{audio_separator_models_repo_url_prefix}/{config_key}"
                                     self.download_file_if_not_exists(download_url, os.path.join(self.model_file_dir, config_key))
 
                                 # In case the user specified the YAML filename as the model input instead of the model filename, correct that
@@ -466,8 +474,8 @@ class Separator:
                                     yaml_config_url = f"{model_data_url_prefix}/mdx_model_data/mdx_c_configs/{yaml_config_filename}"
                                     self.download_file_if_not_exists(f"{yaml_config_url}", yaml_config_filepath)
                                 except RuntimeError:
-                                    self.logger.debug("Model YAML config file not found in UVR repo, attempting to download from PolUVR models repo...")
-                                    yaml_config_url = f"{PolUVR_models_repo_url_prefix}/{yaml_config_filename}"
+                                    self.logger.debug("Model YAML config file not found in UVR repo, attempting to download from audio-separator models repo...")
+                                    yaml_config_url = f"{audio_separator_models_repo_url_prefix}/{yaml_config_filename}"
                                     self.download_file_if_not_exists(f"{yaml_config_url}", yaml_config_filepath)
 
                             # MDX and VR models have config_value set to the model filename
@@ -587,7 +595,12 @@ class Separator:
         }
 
         # Instantiate the appropriate separator class depending on the model type
-        separator_classes = {"MDX": "mdx_separator.MDXSeparator", "VR": "vr_separator.VRSeparator", "Demucs": "demucs_separator.DemucsSeparator", "MDXC": "mdxc_separator.MDXCSeparator"}
+        separator_classes = {
+            "MDX": "mdx_separator.MDXSeparator",
+            "VR": "vr_separator.VRSeparator",
+            "Demucs": "demucs_separator.DemucsSeparator",
+            "MDXC": "mdxc_separator.MDXCSeparator",
+        }
 
         if model_type not in self.arch_specific_params or model_type not in separator_classes:
             raise ValueError(f"Model type not supported (yet): {model_type}")

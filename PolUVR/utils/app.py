@@ -14,27 +14,42 @@ use_autocast = device == "cuda"
 #     Roformer Models     #
 #=========================#
 ROFORMER_MODELS = {
+    # BS Roformer
+    'BS Roformer | Chorus Male-Female by Sucial': 'model_chorus_bs_roformer_ep_267_sdr_24.1275.ckpt',
+    'BS Roformer | DeReverb - by anvuew': 'deverb_bs_roformer_8_384dim_10depth.ckpt',
     'BS Roformer | sdr 10.5309 - by Viperx': 'model_bs_roformer_ep_937_sdr_10.5309.ckpt',
     'BS Roformer | sdr 12.9628 - by Viperx': 'model_bs_roformer_ep_368_sdr_12.9628.ckpt',
     'BS Roformer | sdr 12.9755 - by Viperx': 'model_bs_roformer_ep_317_sdr_12.9755.ckpt',
-    'BS Roformer | Chorus - by Sucial': 'model_chorus_bs_roformer_ep_267_sdr_24.1275.ckpt',
-    'BS Roformer | DeReverb - by anvuew': 'deverb_bs_roformer_8_384dim_10depth.ckpt',
-    'Mel Roformer | sdr 11.4360 - by Viperx': 'model_mel_band_roformer_ep_3005_sdr_11.4360.ckpt',
-    'Mel Roformer | Vocals - by KimberleyJensen': 'vocals_mel_band_roformer.ckpt',
-    'Mel Roformer | Crowd - by Aufr33 and Viperx': 'mel_band_roformer_crowd_aufr33_viperx_sdr_8.7144.ckpt',
-    'Mel Roformer | Karaoke - by Aufr33 and Viperx': 'mel_band_roformer_karaoke_aufr33_viperx_sdr_10.1956.ckpt',
-    'Mel Roformer | DeNoise - by Aufr33': 'denoise_mel_band_roformer_aufr33_sdr_27.9959.ckpt',
-    'Mel Roformer | DeNoise Aggr - by Aufr33': 'denoise_mel_band_roformer_aufr33_aggr_sdr_27.9768.ckpt',
-    'MelBand Roformer | Aspiration - by Sucial': 'aspiration_mel_band_roformer_sdr_18.9845.ckpt',
-    'MelBand Roformer | Aspiration Aggr - by Sucial': 'aspiration_mel_band_roformer_less_aggr_sdr_18.1201.ckpt',
-    'MelBand Roformer | DeReverb - by Anvuew': 'dereverb_mel_band_roformer_anvuew_sdr_19.1729.ckpt',
-    'MelBand Roformer | DeReverb Aggr - by Anvuew': 'dereverb_mel_band_roformer_less_aggressive_anvuew_sdr_18.8050.ckpt',
-    'MelBand Roformer | DeReverb-DeEcho - by Sucial': 'dereverb-echo_mel_band_roformer_sdr_10.0169.ckpt',
+
+    # MelBand Roformer
+    'MelBand Roformer | Aspiration by Sucial': 'aspiration_mel_band_roformer_sdr_18.9845.ckpt',
+    'MelBand Roformer | Aspiration Less Aggressive by Sucial': 'aspiration_mel_band_roformer_less_aggr_sdr_18.1201.ckpt',
+    'MelBand Roformer | Bleed Suppressor V1 by unwa-97chris': 'mel_band_roformer_bleed_suppressor_v1.ckpt',
+    'MelBand Roformer | Crowd - by Aufr33 and Viperx': 'mel_band_roformer_crowd_aufr33_viperx_sdr_8.7144.ckpt',
+    'MelBand Roformer | DeNoise - by Aufr33': 'denoise_mel_band_roformer_aufr33_sdr_27.9959.ckpt',
+    'MelBand Roformer | DeNoise Aggr - by Aufr33': 'denoise_mel_band_roformer_aufr33_aggr_sdr_27.9768.ckpt',
+    'MelBand Roformer | De-Reverb by anvuew': 'dereverb_mel_band_roformer_anvuew_sdr_19.1729.ckpt',
+    'MelBand Roformer | De-Reverb Less Aggressive by anvuew': 'dereverb_mel_band_roformer_less_aggressive_anvuew_sdr_18.8050.ckpt',
+    'MelBand Roformer | De-Reverb-Echo by Sucial': 'dereverb-echo_mel_band_roformer_sdr_10.0169.ckpt',
+    'MelBand Roformer | De-Reverb-Echo V2 by Sucial': 'dereverb-echo_mel_band_roformer_sdr_13.4843_v2.ckpt',
+    'MelBand Roformer | Karaoke - by Aufr33 and Viperx': 'mel_band_roformer_karaoke_aufr33_viperx_sdr_10.1956.ckpt',
+    'MelBand Roformer | sdr 11.4360 - by Viperx': 'model_mel_band_roformer_ep_3005_sdr_11.4360.ckpt',
+    'MelBand Roformer | Vocals by Kimberley Jensen': 'vocals_mel_band_roformer.ckpt',
+
+    # MelBand Roformer Kim
+    'MelBand Roformer Kim | Big Beta 4 FT by unwa': 'melband_roformer_big_beta4.ckpt',
+    'MelBand Roformer Kim | Big Beta 5e FT by unwa': 'melband_roformer_big_beta5e.ckpt',
+    'MelBand Roformer Kim | Big SYHFT V1 by SYH99999': 'MelBandRoformerBigSYHFTV1.ckpt',
+    'MelBand Roformer Kim | FT by unwa': 'mel_band_roformer_kim_ft_unwa.ckpt',
     'MelBand Roformer Kim | Inst V1 - by Unwa': 'melband_roformer_inst_v1.ckpt',
     'MelBand Roformer Kim | Inst V1 (E) - by Unwa': 'melband_roformer_inst_v1e.ckpt',
     'MelBand Roformer Kim | Inst V2 - by Unwa': 'melband_roformer_inst_v2.ckpt',
     'MelBand Roformer Kim | InstVoc Duality V1 - by Unwa': 'melband_roformer_instvoc_duality_v1.ckpt',
     'MelBand Roformer Kim | InstVoc Duality V2 - by Unwa': 'melband_roformer_instvox_duality_v2.ckpt',
+    'MelBand Roformer Kim | SYHFT V2 by SYH99999': 'MelBandRoformerSYHFTV2.ckpt',
+    'MelBand Roformer Kim | SYHFT V2.5 by SYH99999': 'MelBandRoformerSYHFTV2.5.ckpt',
+    'MelBand Roformer Kim | SYHFT V3 by SYH99999': 'MelBandRoformerSYHFTV3Epsilon.ckpt',
+    'MelBand Roformer Kim | SYHFT by SYH99999': 'MelBandRoformerSYHFT.ckpt',
 }
 #=========================#
 #      MDX23C Models      #
@@ -43,6 +58,7 @@ MDX23C_MODELS = [
     'MDX23C-8KFFT-InstVoc_HQ.ckpt',
     'MDX23C-8KFFT-InstVoc_HQ_2.ckpt',
     'MDX23C_D1581.ckpt',
+    'MDX23C-De-Reverb-aufr33-jarredou.ckpt',
 ]
 #=========================#
 #     MDXN-NET Models     #
@@ -116,6 +132,7 @@ VR_ARCH_MODELS = [
     'UVR-DeEcho-DeReverb.pth',
     'UVR-De-Echo-Aggressive.pth',
     'UVR-De-Echo-Normal.pth',
+    'UVR-De-Reverb-aufr33-jarredou.pth',
     'UVR-DeNoise-Lite.pth',
     'UVR-DeNoise.pth',
 ]
@@ -365,7 +382,7 @@ with gr.Blocks(
     with gr.Tab("Roformer"):
         with gr.Group():
             with gr.Row():
-                roformer_model = gr.Dropdown(label="Select the Model", choices=list(ROFORMER_MODELS.keys()))
+                roformer_model = gr.Dropdown(value="MelBand Roformer Kim | Inst V1 (E) - by Unwa", label="Select the Model", choices=list(ROFORMER_MODELS.keys()))
             with gr.Row():
                 roformer_seg_size = gr.Slider(minimum=32, maximum=4000, step=32, value=256, label="Segment Size", info="Larger consumes more resources, but may give better results.")
                 roformer_override_seg_size = gr.Checkbox(value=False, label="Override segment size", info="Override model default segment size instead of using the model default value.")
