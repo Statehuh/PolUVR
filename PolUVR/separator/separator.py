@@ -67,7 +67,7 @@ class Separator:
         shifts: 2
         overlap: 0.25
         segments_enabled: True
-        
+
     MDXC Architecture Specific Attributes & Defaults:
         segment_size: 256
         override_model_segment_size: False
@@ -140,7 +140,7 @@ class Separator:
         self.normalization_threshold = normalization_threshold
         if normalization_threshold <= 0 or normalization_threshold > 1:
             raise ValueError("The normalization_threshold must be greater than 0 and less than or equal to 1.")
-        
+
         self.amplification_threshold = amplification_threshold
         if amplification_threshold < 0 or amplification_threshold > 1:
             raise ValueError("The amplification_threshold must be greater than or equal to 0 and less than or equal to 1.")
@@ -161,7 +161,7 @@ class Separator:
                 raise ValueError(f"The sample rate setting is {self.sample_rate}. Enter something less ambitious.")
         except ValueError:
             raise ValueError("The sample rate must be a non-zero whole number. Please provide a valid integer.")
-        
+
         self.use_soundfile = use_soundfile
         self.use_autocast = use_autocast
 
@@ -535,10 +535,19 @@ class Separator:
         self.logger.debug(f"MDX model data path set to {mdx_model_data_path}")
         self.download_file_if_not_exists(mdx_model_data_url, mdx_model_data_path)
 
-        # Loading model data
+        # Loading model data from UVR
         self.logger.debug("Loading MDX and VR model parameters from UVR model data files...")
         vr_model_data_object = json.load(open(vr_model_data_path, encoding="utf-8"))
         mdx_model_data_object = json.load(open(mdx_model_data_path, encoding="utf-8"))
+
+        # Load additional model data from PolUVR
+        self.logger.debug("Loading additional model parameters from PolUVR model data file...")
+        with resources.open_text("PolUVR", "model-data.json") as f:
+            PolUVR_model_data = json.load(f)
+
+        # Merge the model data objects, with PolUVR data taking precedence
+        vr_model_data_object = {**vr_model_data_object, **PolUVR_model_data.get("vr_model_data", {})}
+        mdx_model_data_object = {**mdx_model_data_object, **PolUVR_model_data.get("mdx_model_data", {})}
 
         if model_hash in mdx_model_data_object:
             model_data = mdx_model_data_object[model_hash]
@@ -547,7 +556,7 @@ class Separator:
         else:
             raise ValueError(f"Unsupported Model File: parameters for MD5 hash {model_hash} could not be found in UVR model data file for MDX or VR arch.")
 
-        self.logger.debug(f"Model data loaded from UVR JSON using hash {model_hash}: {model_data}")
+        self.logger.debug(f"Model data loaded using hash {model_hash}: {model_data}")
 
         return model_data
 
@@ -591,7 +600,7 @@ class Separator:
             "output_single_stem": self.output_single_stem,
             "invert_using_spec": self.invert_using_spec,
             "sample_rate": self.sample_rate,
-            "use_soundfile": self.use_soundfile
+            "use_soundfile": self.use_soundfile,
         }
 
         # Instantiate the appropriate separator class depending on the model type
