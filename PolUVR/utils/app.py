@@ -183,21 +183,25 @@ def rename_stems(audio, vocals_stem, instrumental_stem, other_stem, drums_stem, 
     return stems
 
 def leaderboard(list_filter, list_limit):
-    result = subprocess.run(
-        ["PolUVR", "-l", f"--list_filter={list_filter}", f"--list_limit={list_limit}"],
-        capture_output=True,
-        text=True,
-        shell=True,
-    )
-    if result.returncode != 0:
-        return f"Error: {result.stderr}"
-
-    return "<table border='1'>" + "".join(
-        f"<tr style='{'font-weight: bold; font-size: 1.2em;' if i == 0 else ''}'>" + 
-        "".join(f"<td>{cell}</td>" for cell in re.split(r"\s{2,}", line.strip())) + 
-        "</tr>" 
-        for i, line in enumerate(re.findall(r"^(?!-+)(.+)$", result.stdout.strip(), re.MULTILINE))
-    ) + "</table>"
+    try:
+        result = subprocess.run(
+            ["PolUVR", "-l", f"--list_filter={list_filter}", f"--list_limit={list_limit}"],
+            capture_output=True,
+            text=True,
+            shell=True,
+        )
+        if result.returncode != 0:
+            return f"Error: {result.stderr}"
+        
+        return "<table border='1'>" + "".join(
+            f"<tr style='{'font-weight: bold; font-size: 1.2em;' if i == 0 else ''}'>" + 
+            "".join(f"<td>{cell}</td>" for cell in re.split(r"\s{2,}", line.strip())) + 
+            "</tr>" 
+            for i, line in enumerate(re.findall(r"^(?!-+)(.+)$", result.stdout.strip(), re.MULTILINE))
+        ) + "</table>"
+    
+    except Exception as e:
+        return f"Error: {e}"
 
 def roformer_separator(audio, model_key, seg_size, override_seg_size, overlap, pitch_shift, model_dir, out_dir, out_format, norm_thresh, amp_thresh, batch_size, vocals_stem, instrumental_stem, other_stem, drums_stem, bass_stem, guitar_stem, piano_stem, progress=gr.Progress(track_tqdm=True)):
     """Separate audio using Roformer model."""
