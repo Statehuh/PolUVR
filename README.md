@@ -5,7 +5,16 @@
 
 ## Overview
 
-PolUVR is a Python-based audio separation tool that leverages advanced machine learning models to separate audio tracks into different stems, such as vocals, instrumental, drums, bass, and more. This project is a fork of the [python-audio-separator](https://github.com/nomadkaraoke/python-audio-separator) repository, and it aims to provide a user-friendly interface for audio separation tasks.
+**PolUVR** is a Python-based audio separation tool that leverages advanced machine learning models to separate audio tracks into distinct stems, such as vocals, instrumental, drums, bass, and more. Built as a fork of the [python-audio-separator](https://github.com/nomadkaraoke/python-audio-separator), PolUVR offers enhanced usability, hardware acceleration, and a user-friendly Gradio interface.
+
+---
+
+## Key Features
+
+- **Audio Separation:** Extract vocals, instrumental, drums, bass, and other stems.
+- **Hardware Acceleration:** Supports CUDA (Nvidia GPUs) and CoreML (Apple Silicon).
+- **Cross-Platform:** Works on Linux, macOS, and Windows.
+- **Gradio Interface:** Easy-to-use web interface for audio separation.
 
 ---
 
@@ -13,62 +22,36 @@ PolUVR is a Python-based audio separation tool that leverages advanced machine l
 
 ### Hardware Acceleration Options
 
-#### Nvidia GPU with CUDA
-
-**Supported CUDA Versions:** 11.8 and 12.2
-
-To verify successful configuration, run `PolUVR --env_info`. You should see the following log message:
-```
-ONNXruntime has CUDAExecutionProvider available, enabling acceleration
-```
-
-**Installation:**
+PolUVR supports multiple hardware acceleration options for optimal performance. To verify successful configuration, run:
 ```sh
-pip install "PolUVR[gpu]"
+PolUVR --env_info
 ```
 
-#### Apple Silicon, macOS Sonoma+ with M1 or newer CPU (CoreML acceleration)
-
-To verify successful configuration, run `PolUVR --env_info`. You should see the following log message:
-```
-ONNXruntime has CoreMLExecutionProvider available, enabling acceleration
-```
-
-**Installation:**
-```sh
-pip install "PolUVR[cpu]"
-```
-
-#### CPU-Only (No Hardware Acceleration)
-
-**Installation:**
-```sh
-pip install "PolUVR[cpu]"
-```
+| **Option**                 | **Command**                 | **Expected Log Message**													|
+|----------------------------|-----------------------------|----------------------------------------------------------------------------|
+| **Nvidia GPU with CUDA**   | `pip install "PolUVR[gpu]"` | `ONNXruntime has CUDAExecutionProvider available, enabling acceleration`   |
+| **Apple Silicon (CoreML)** | `pip install "PolUVR[cpu]"` | `ONNXruntime has CoreMLExecutionProvider available, enabling acceleration` |
+| **CPU-Only**               | `pip install "PolUVR[cpu]"` | No hardware acceleration enabled											|
 
 ---
 
 ### FFmpeg Dependency
 
-To check if `PolUVR` is correctly configured to use FFmpeg, run `PolUVR --env_info`. The log should show:
+PolUVR relies on FFmpeg for audio processing. To check if FFmpeg is installed, run:
+```sh
+PolUVR --env_info
 ```
-FFmpeg installed
-```
+The log should show: `FFmpeg installed`
 
-If it says that FFmpeg is missing or an error occurs, install FFmpeg using the following commands:
+If FFmpeg is missing, install it using the following commands:
 
-**Debian/Ubuntu:**
-* ```sh
-  apt-get update; apt-get install -y ffmpeg
-  ```
-**macOS:**
-* ```sh
-  brew update; brew install ffmpeg
-  ```
-**Windows:**
-* Follow this guide: [Install-FFmpeg-on-Windows](https://www.wikihow.com/Install-FFmpeg-on-Windows)
+| **OS**            | **Command**                                                                                       |
+|-------------------|---------------------------------------------------------------------------------------------------|
+| **Debian/Ubuntu** | `apt-get update; apt-get install -y ffmpeg`                                                       |
+| **macOS**         | `brew update; brew install ffmpeg`                                                                |
+| **Windows**       | Follow this guide: [Install FFmpeg on Windows](https://www.wikihow.com/Install-FFmpeg-on-Windows) |
 
-If you cloned the repository, you can use the following command to install FFmpeg:
+If you cloned the repository, you can install FFmpeg with:
 ```sh
 PolUVR-ffmpeg
 ```
@@ -77,7 +60,7 @@ PolUVR-ffmpeg
 
 ## GPU / CUDA Specific Installation Steps
 
-In theory, installing `PolUVR` with the `[gpu]` extra should suffice. However, sometimes PyTorch and ONNX Runtime with CUDA support can be tricky. You may need to reinstall these packages directly:
+While installing `PolUVR` with the `[gpu]` extra should suffice, sometimes PyTorch and ONNX Runtime with CUDA support require manual intervention. If you encounter issues, follow these steps:
 
 ```sh
 pip uninstall torch onnxruntime
@@ -90,14 +73,12 @@ For the latest PyTorch version, use the command recommended by the [PyTorch inst
 
 ### Multiple CUDA Library Versions
 
-Depending on your environment, you may need specific CUDA library versions. For example, Google Colab uses CUDA 12 by default, but ONNX Runtime may still require CUDA 11 libraries. Install CUDA 11 libraries alongside CUDA 12:
-
+If you need to install multiple CUDA versions (e.g., CUDA 11 alongside CUDA 12), use:
 ```sh
 apt update; apt install nvidia-cuda-toolkit
 ```
 
 If you encounter errors like `Failed to load library` or `cannot open shared object file`, resolve them by running:
-
 ```sh
 python -m pip install ort-nightly-gpu --index-url=https://aiinfra.pkgs.visualstudio.com/PublicPackages/_packaging/ort-cuda-12-nightly/pypi/simple/
 ```
@@ -108,15 +89,24 @@ python -m pip install ort-nightly-gpu --index-url=https://aiinfra.pkgs.visualstu
 
 ### Gradio Interface
 
+To launch the Gradio interface, use:
 ```sh
-usage: PolUVR-app [--share] [--open]
-
-Params:
-  --share                  Opens public access to the interface (for servers, Google Colab, Kaggle, etc.).
-  --open                   Automatically opens the interface in a new browser tab.
-
+PolUVR-app [--share] [--open]
 ```
-Once the following output message `Running on local URL:  http://127.0.0.1:7860` or `Running on public URL: https://28425b3eb261b9ddc6.gradio.live` appears, you can click on the link to open a tab with the WebUI.
+
+| **Parameter** | **Description**                                                                |
+|---------------|--------------------------------------------------------------------------------|
+| `--share`     | Opens public access to the interface (useful for servers, Google Colab, etc.). |
+| `--open`      | Automatically opens the interface in a new browser tab.                        |
+
+As soon as one of the following messages appears:
+```
+Running on local URL:  http://127.0.0.1:7860
+```
+```
+Running on public URL: https://28425b3eb261b9ddc6.gradio.live
+```
+you can click on the link to open the WebUI.
 
 ---
 
@@ -137,7 +127,7 @@ Once the following output message `Running on local URL:  http://127.0.0.1:7860`
 ### Clone the Repository
 
 ```sh
-git clone https://github.com/YOUR_USERNAME/PolUVR.git
+git clone https://github.com/Bebra777228/PolUVR.git
 cd PolUVR
 ```
 
@@ -154,7 +144,7 @@ conda activate PolUVR-dev
 poetry install
 ```
 
-Install extra dependencies:
+For extra dependencies, use:
 ```sh
 poetry install --extras "cpu"
 ```
@@ -163,10 +153,10 @@ or
 poetry install --extras "gpu"
 ```
 
-### Running the CLI Locally
+### Running the Gradio interface Locally
 
 ```sh
-PolUVR path/to/your/audio-file.wav
+PolUVR-app --open
 ```
 
 ### Deactivate the Virtual Environment
@@ -179,10 +169,10 @@ conda deactivate
 
 ## Contributing 🤝
 
-Contributions are welcome! Fork the repository, make your changes, and submit a pull request.
+Contributions are welcome! Fork the repository, make your changes, and submit a pull request. For major changes, please open an issue first to discuss what you would like to add.
 
 ---
 
-# Original Repository
+## Acknowledgments
 
-This project is a fork of the original [python-audio-separator](https://github.com/nomadkaraoke/python-audio-separator) repository.
+This project is a fork of the original [python-audio-separator](https://github.com/nomadkaraoke/python-audio-separator) repository. Special thanks to the contributors of the original project for their foundational work.
