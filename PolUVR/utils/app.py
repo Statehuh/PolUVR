@@ -1,8 +1,10 @@
 import os
+import re
 import sys
 import torch
 import shutil
 import logging
+import subprocess
 import gradio as gr
 
 from PolUVR.separator import Separator
@@ -180,7 +182,23 @@ def rename_stems(audio, vocals_stem, instrumental_stem, other_stem, drums_stem, 
     }
     return stems
 
-# Обновленные функции для сепарации
+def leaderboard(list_filter, list_limit):
+    result = subprocess.run(
+        ["PolUVR", "-l", f"--list_filter={list_filter}", f"--list_limit={list_limit}"],
+        capture_output=True,
+        text=True,
+        shell=True,
+    )
+    if result.returncode != 0:
+        return f"Error: {result.stderr}"
+
+    return "<table border='1'>" + "".join(
+        f"<tr style='{'font-weight: bold; font-size: 1.2em;' if i == 0 else ''}'>" + 
+        "".join(f"<td>{cell}</td>" for cell in re.split(r"\s{2,}", line.strip())) + 
+        "</tr>" 
+        for i, line in enumerate(re.findall(r"^(?!-+)(.+)$", result.stdout.strip(), re.MULTILINE))
+    ) + "</table>"
+
 def roformer_separator(audio, model_key, seg_size, override_seg_size, overlap, pitch_shift, model_dir, out_dir, out_format, norm_thresh, amp_thresh, batch_size, vocals_stem, instrumental_stem, other_stem, drums_stem, bass_stem, guitar_stem, piano_stem, progress=gr.Progress(track_tqdm=True)):
     """Separate audio using Roformer model."""
     stemname = rename_stems(audio, vocals_stem, instrumental_stem, other_stem, drums_stem, bass_stem, guitar_stem, piano_stem, model_key)
@@ -510,7 +528,18 @@ with gr.Blocks(
                 guitar_stem = gr.Textbox(value="NAME_(STEM)_MODEL", label="Guitar Stem", info="Output example: Music_(Guitar)_BS-Roformer-Viperx-1297", placeholder="NAME_(STEM)_MODEL")
                 piano_stem = gr.Textbox(value="NAME_(STEM)_MODEL", label="Piano Stem", info="Output example: Music_(Piano)_BS-Roformer-Viperx-1297", placeholder="NAME_(STEM)_MODEL")
 
+    with gr.Tab("Leaderboard"):
+        with gr.Group():
+            with gr.Row(equal_height=True):
+                list_filter = gr.Dropdown(value="vocals", choices=["vocals", "instrumental", "drums", "bass", "guitar", "piano", "other"], label="List filter", info="Filter and sort the model list by 'stem'")
+                list_limit = gr.Slider(minimum=1, maximum=10, step=1, value=5, label="List limit", info="Limit the number of models shown.")
+                list_button = gr.Button("Show list", variant="primary")
+
+        output_list = gr.HTML(label="Leaderboard")
+
     demucs_model.change(update_stems, inputs=[demucs_model], outputs=stem6)
+
+    list_button.click(leaderboard, inputs=[list_filter, list_limit], outputs=output_list)
 
     roformer_button.click(
         roformer_separator,

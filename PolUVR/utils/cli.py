@@ -4,6 +4,8 @@ import logging
 import json
 import sys
 from importlib import metadata
+from typing import Optional
+
 
 def main():
     """Main entry point for the CLI."""
@@ -22,7 +24,7 @@ def main():
     version_help = "Show the program's version number and exit."
     debug_help = "Enable debug logging, equivalent to --log_level=debug."
     env_info_help = "Print environment information and exit."
-    list_models_help = "List all supported models and exit."
+    list_models_help = "List all supported models and exit. Use --list_filter to filter/sort the list and --list_limit to show only top N results."
     log_level_help = "Log level, e.g. info, debug, warning (default: %(default)s)."
 
     info_params = parser.add_argument_group("Info and Debugging")
@@ -31,6 +33,9 @@ def main():
     info_params.add_argument("-e", "--env_info", action="store_true", help=env_info_help)
     info_params.add_argument("-l", "--list_models", action="store_true", help=list_models_help)
     info_params.add_argument("--log_level", default="info", help=log_level_help)
+    info_params.add_argument("--list_filter", help="Filter and sort the model list by 'name', 'filename', or any stem e.g. vocals, instrumental, drums")
+    info_params.add_argument("--list_limit", type=int, help="Limit the number of models shown")
+    info_params.add_argument("--list_format", choices=["pretty", "json"], default="pretty", help="Format for listing models: 'pretty' for formatted output, 'json' for raw JSON dump")
 
     model_filename_help = "Model to use for separation (default: %(default)s). Example: -m 2_HP-UVR.pth"
     output_format_help = "Output format for separated files, any common format (default: %(default)s). Example: --output_format=MP3"
@@ -54,7 +59,7 @@ def main():
     sample_rate_help = "Modify the sample rate of the output audio (default: %(default)s). Example: --sample_rate=44100"
     use_soundfile_help = "Use soundfile to write audio output (default: %(default)s). Example: --use_soundfile"
     use_autocast_help = "Use PyTorch autocast for faster inference (default: %(default)s). Do not use for CPU inference. Example: --use_autocast"
-    custom_output_names_help = "Custom names for all output files in JSON format (default: %(default)s). Example: --custom_output_names='{\"Vocals\": \"vocals_output\", \"Drums\": \"drums_output\"}'"
+    custom_output_names_help = 'Custom names for all output files in JSON format (default: %(default)s). Example: --custom_output_names=\'{"Vocals": "vocals_output", "Drums": "drums_output"}\''
 
     common_params = parser.add_argument_group("Common Separation Parameters")
     common_params.add_argument("--invert_spect", action="store_true", help=invert_spect_help)
@@ -135,8 +140,36 @@ def main():
         sys.exit(0)
 
     if args.list_models:
-        separator = Separator()
-        print(json.dumps(separator.list_supported_model_files(), indent=4, sort_keys=True))
+        separator = Separator(info_only=True)
+
+        if args.list_format == "json":
+            model_list = separator.list_supported_model_files()
+            print(json.dumps(model_list, indent=2))
+        else:
+            models = separator.get_simplified_model_list(filter_sort_by=args.list_filter)
+
+            # Apply limit if specified
+            if args.list_limit and args.list_limit > 0:
+                models = dict(list(models.items())[: args.list_limit])
+
+            # Calculate maximum widths for each column
+            filename_width = max(len("Model Filename"), max(len(filename) for filename in models.keys()))
+            arch_width = max(len("Arch"), max(len(info["Type"]) for info in models.values()))
+            stems_width = max(len("Output Stems (SDR)"), max(len(", ".join(info["Stems"])) for info in models.values()))
+            name_width = max(len("Friendly Name"), max(len(info["Name"]) for info in models.values()))
+
+            # Calculate total width for separator line
+            total_width = filename_width + arch_width + stems_width + name_width + 15  # 15 accounts for spacing between columns
+
+            # Format the output with dynamic widths and extra spacing
+            print("-" * total_width)
+            print(f"{'Model Filename':<{filename_width}}  {'Arch':<{arch_width}}  {'Output Stems (SDR)':<{stems_width}}  {'Friendly Name'}")
+            print("-" * total_width)
+
+            for filename, info in models.items():
+                stems = ", ".join(info["Stems"])
+                print(f"{filename:<{filename_width}}  {info['Type']:<{arch_width}}  {stems:<{stems_width}}  {info['Name']}")
+
         sys.exit(0)
 
     if args.download_model_only:

@@ -37,8 +37,8 @@ def evaluate_track(track_name, track_path, test_model, mus_db):
         scores = museval.TrackStore(track_name)
         scores.scores = json_data
     else:
-        # Standard stem output names
-        stem_mapping = {"Vocals": "vocals", "Instrumental": "instrumental", "Drums": "drums", "Bass": "bass", "Other": "other"}
+        # Expanded stem mapping to include "no-stem" outputs
+        stem_mapping = {"Vocals": "vocals", "Instrumental": "instrumental", "Drums": "drums", "Bass": "bass", "Other": "other", "No Drums": "nodrums", "No Bass": "nobass", "No Other": "noother"}
 
         # Perform separation if needed
         if not os.path.exists(output_dir) or not os.listdir(output_dir):
@@ -47,12 +47,22 @@ def evaluate_track(track_name, track_path, test_model, mus_db):
             separator.load_model(model_filename=test_model)
             separator.separate(os.path.join(track_path, "mixture.wav"), custom_output_names=stem_mapping)
 
-        # Check which stems were actually created
+        # Check which stems were actually created and pair them appropriately
         available_stems = {}
-        for musdb_name in ["vocals", "instrumental", "drums", "bass", "other"]:
-            stem_path = os.path.join(output_dir, f"{musdb_name}.wav")
-            if os.path.exists(stem_path):
-                available_stems[musdb_name if musdb_name != "instrumental" else "accompaniment"] = stem_path
+        stem_pairs = {"drums": "nodrums", "bass": "nobass", "other": "noother", "vocals": "instrumental"}
+
+        for main_stem, no_stem in stem_pairs.items():
+            # Construct full file paths for both the isolated stem and its complement
+            main_path = os.path.join(output_dir, f"{main_stem}.wav")
+            no_stem_path = os.path.join(output_dir, f"{no_stem}.wav")
+
+            # Only process this pair if both files exist
+            if os.path.exists(main_path) and os.path.exists(no_stem_path):
+                # Add the main stem with its path to available_stems
+                available_stems[main_stem] = main_path  # This is already using the correct musdb name
+
+                # For the complement stem, always use "accompaniment" as that's what museval expects
+                available_stems["accompaniment"] = no_stem_path
 
         if not available_stems:
             logger.info(f"No evaluatable stems found for model {test_model}, skipping evaluation")
@@ -77,9 +87,14 @@ def evaluate_track(track_name, track_path, test_model, mus_db):
 
         # Move and rename the results file
         test_results = os.path.join(output_dir, "test", f"{track_name}.json")
+        train_results = os.path.join(output_dir, "train", f"{track_name}.json")
+
         if os.path.exists(test_results):
             os.rename(test_results, results_file)
             os.rmdir(os.path.join(output_dir, "test"))
+        elif os.path.exists(train_results):
+            os.rename(train_results, results_file)
+            os.rmdir(os.path.join(output_dir, "train"))
 
     # Calculate aggregate scores for available stems
     results_store = museval.EvalStore()
@@ -138,21 +153,12 @@ def calculate_median_scores(track_scores):
         if any(metrics.values()):  # Only include stems that have scores
             median_scores[stem] = {metric: float(f"{np.median(values):.6g}") for metric, values in metrics.items() if values}  # Only include metrics that have values
 
-    return median_scores if median_scores else None
+    return median_scores
 
 
 def main():
     logger.info("Starting model evaluation script...")
     os.makedirs(RESULTS_PATH, exist_ok=True)
-
-    # Initialize MUSDB once at the start
-    logger.info("Initializing MUSDB database...")
-    mus = musdb.DB(root=MUSDB_PATH, is_wav=True)
-
-    # Get list of all available models
-    logger.info("Getting list of available models...")
-    separator = Separator()
-    models_by_type = separator.list_supported_model_files()
 
     # Load existing results if available
     combined_results_path = "PolUVR/models-scores.json"
@@ -161,6 +167,108 @@ def main():
         logger.info("Loading existing combined results...")
         with open(combined_results_path) as f:
             combined_results = json.load(f)
+
+    # Define known demucs model stems
+    DEMUCS_STEMS = {
+        "htdemucs.yaml": {"instruments": ["vocals", "drums", "bass", "other"], "target_instrument": None},
+        "htdemucs_ft.yaml": {"instruments": ["vocals", "drums", "bass", "other"], "target_instrument": None},
+        "hdemucs_mmi.yaml": {"instruments": ["vocals", "drums", "bass", "other"], "target_instrument": None},
+        "htdemucs_6s.yaml": {"instruments": ["vocals", "drums", "bass", "guitar", "piano", "other"], "target_instrument": None},
+    }
+
+    # Get list of all available models
+    logger.info("Getting list of available models...")
+    separator = Separator()
+    models_by_type = separator.list_supported_model_files()
+
+    # Iterate through models and load each one
+    for model_type, models in models_by_type.items():
+        logger.info(f"\nProcessing model type: {model_type}")
+        for model_name, model_info in models.items():
+            test_model = model_info.get("filename")
+            if not test_model:
+                logger.warning(f"No filename found for model {model_name}, skipping...")
+                continue
+
+            logger.info(f"\n=== Analyzing model: {model_name} (filename: {test_model}) ===")
+            try:
+                separator.load_model(model_filename=test_model)
+                model_data = separator.model_instance.model_data
+                logger.info(f"Raw model_data: {json.dumps(model_data, indent=2)}")
+
+                # Initialize model entry if it doesn't exist
+                if test_model not in combined_results:
+                    logger.info(f"Initializing new entry for {test_model}")
+                    combined_results[test_model] = {"model_name": model_name, "track_scores": [], "median_scores": {}, "stems": [], "target_stem": None}
+
+                # Handle demucs models specially
+                if test_model in DEMUCS_STEMS:
+                    logger.info(f"Processing as Demucs model: {test_model}")
+                    logger.info(f"Demucs config: {DEMUCS_STEMS[test_model]}")
+                    combined_results[test_model]["stems"] = [s.lower() for s in DEMUCS_STEMS[test_model]["instruments"]]
+                    combined_results[test_model]["target_stem"] = DEMUCS_STEMS[test_model]["target_instrument"].lower() if DEMUCS_STEMS[test_model]["target_instrument"] else None
+                    logger.info(f"Set stems to: {combined_results[test_model]['stems']}")
+                    logger.info(f"Set target_stem to: {combined_results[test_model]['target_stem']}")
+
+                # Extract stem information for other models
+                elif "training" in model_data:
+                    logger.info("Processing model with training data")
+                    instruments = model_data["training"].get("instruments", [])
+                    target = model_data["training"].get("target_instrument")
+                    logger.info(f"Found instruments: {instruments}")
+                    logger.info(f"Found target: {target}")
+                    combined_results[test_model]["stems"] = [s.lower() for s in instruments] if instruments else []
+                    combined_results[test_model]["target_stem"] = target.lower() if target else None
+                    logger.info(f"Set stems to: {combined_results[test_model]['stems']}")
+                    logger.info(f"Set target_stem to: {combined_results[test_model]['target_stem']}")
+
+                elif "primary_stem" in model_data:
+                    logger.info("Processing model with primary_stem")
+                    primary_stem = model_data["primary_stem"].lower()
+                    logger.info(f"Found primary_stem: {primary_stem}")
+
+                    if primary_stem == "vocals":
+                        other_stem = "instrumental"
+                    elif primary_stem == "instrumental":
+                        other_stem = "vocals"
+                    else:
+                        if primary_stem.startswith("no "):
+                            other_stem = primary_stem[3:]  # Remove "no " prefix
+                        else:
+                            other_stem = "no " + primary_stem
+                    logger.info(f"Determined other_stem: {other_stem}")
+
+                    instruments = [primary_stem, other_stem]
+                    combined_results[test_model]["stems"] = instruments
+                    combined_results[test_model]["target_stem"] = primary_stem
+                    logger.info(f"Set stems to: {combined_results[test_model]['stems']}")
+                    logger.info(f"Set target_stem to: {combined_results[test_model]['target_stem']}")
+
+                else:
+                    logger.warning(f"No recognized stem information found in model data for {test_model}")
+                    combined_results[test_model]["stems"] = []
+                    combined_results[test_model]["target_stem"] = None
+
+                logger.info(f"Final model configuration for {test_model}:")
+                logger.info(f"Stems: {combined_results[test_model]['stems']}")
+                logger.info(f"Target stem: {combined_results[test_model]['target_stem']}")
+
+            except Exception as e:
+                logger.error(f"Error loading model {test_model}: {str(e)}")
+                logger.exception("Full exception details:")
+                continue
+
+    # Save the combined results after model inspection
+    logger.info("Saving model stem information...")
+    os.makedirs(os.path.dirname(combined_results_path), exist_ok=True)
+    with open(combined_results_path, "w") as f:
+        json.dump(combined_results, f, indent=2)
+
+    logger.info("Model stem information saved")
+
+    # Initialize MUSDB once at the start
+    logger.info("Initializing MUSDB database...")
+    mus = musdb.DB(root=MUSDB_PATH, is_wav=True)
 
     # Process all tracks in MUSDB18
     for track in mus.tracks:
@@ -171,51 +279,46 @@ def main():
         # Process all models for this track
         for model_type, models in models_by_type.items():
             for model_name, model_info in models.items():
-                test_model = None
-                if isinstance(model_info, str):
-                    test_model = model_info
-                elif isinstance(model_info, dict):
-                    for file_name in model_info.keys():
-                        if file_name.endswith((".onnx", ".pth", ".ckpt")):
-                            test_model = file_name
-                            break
+                # Get the filename from the model_info dictionary
+                test_model = model_info.get("filename")
 
-                if test_model:
-                    # Initialize model entry if it doesn't exist
-                    if test_model not in combined_results:
-                        combined_results[test_model] = {"model_name": model_name, "track_scores": [], "median_scores": None}
+                # Skip if no filename is found
+                if not test_model:
+                    logger.warning(f"No filename found for model {model_name}, skipping...")
+                    continue
 
-                    # Check if track already evaluated
-                    track_already_evaluated = any(
-                        track_score["track_name"] == track_name for track_score in combined_results[test_model]["track_scores"] if track_score is not None  # Handle null entries
-                    )
+                # Check if track already evaluated
+                track_already_evaluated = any(track_score["track_name"] == track_name for track_score in combined_results[test_model]["track_scores"] if track_score is not None)
 
-                    if track_already_evaluated:
-                        logger.info(f"Skipping already evaluated track {track_name} for model: {test_model}")
+                if track_already_evaluated:
+                    logger.info(f"Skipping already evaluated track {track_name} for model: {test_model}")
+                    continue
+
+                # Process the model
+                logger.info(f"Processing model: {test_model}")
+                try:
+                    _, model_results = evaluate_track(track_name, track_path, test_model, mus)
+                    if model_results:
+                        combined_results[test_model]["track_scores"].append(model_results)
                     else:
-                        logger.info(f"Processing model: {test_model}")
-                        try:
-                            _, model_results = evaluate_track(track_name, track_path, test_model, mus)
-                            if model_results:
-                                combined_results[test_model]["track_scores"].append(model_results)
-                            else:
-                                combined_results[test_model]["track_scores"].append(None)
-                        except Exception as e:
-                            logger.error(f"Error evaluating model {test_model} with track {track_name}: {str(e)}")
-                            combined_results[test_model]["track_scores"].append(None)
-                            continue
+                        logger.info(f"Skipping model {test_model} for track {track_name} due to no evaluatable stems")
+                except Exception as e:
+                    logger.error(f"Error evaluating model {test_model} with track {track_name}: {str(e)}")
+                    logger.exception(f"Exception details: ", exc_info=e)
+                    continue
 
-                    # Calculate and update median scores regardless of whether track was evaluated
+                # Update and save results
+                if combined_results[test_model]["track_scores"]:
                     median_scores = calculate_median_scores(combined_results[test_model]["track_scores"])
                     combined_results[test_model]["median_scores"] = median_scores
+                
+                # Save results after each model
+                os.makedirs(os.path.dirname(combined_results_path), exist_ok=True)
+                with open(combined_results_path, "w") as f:
+                    json.dump(combined_results, f, indent=2)
 
-                    # Save results after each model (whether evaluated or skipped)
-                    os.makedirs(os.path.dirname(combined_results_path), exist_ok=True)
-                    with open(combined_results_path, "w") as f:
-                        json.dump(combined_results, f, indent=2)
-
-                    if not track_already_evaluated:
-                        logger.info(f"Updated combined results file with {test_model} - {track_name}")
+                if not track_already_evaluated:
+                    logger.info(f"Updated combined results file with {test_model} - {track_name}")
 
     logger.info("Evaluation complete")
     return 0
