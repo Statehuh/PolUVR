@@ -27,11 +27,11 @@ PolUVR supports multiple hardware acceleration options for optimal performance. 
 PolUVR --env_info
 ```
 
-| **Command**                 | **Expected Log Message**													                         |
+| **Command**                 | **Expected Log Message**                                                   |
 |-----------------------------|----------------------------------------------------------------------------|
 | `pip install "PolUVR[gpu]"` | `ONNXruntime has CUDAExecutionProvider available, enabling acceleration`   |
 | `pip install "PolUVR[cpu]"` | `ONNXruntime has CoreMLExecutionProvider available, enabling acceleration` |
-| `pip install "PolUVR[cpu]"` | No hardware acceleration enabled									                     		 |
+| `pip install "PolUVR[cpu]"` | No hardware acceleration enabled                                           |
 
 ---
 
