@@ -57,7 +57,7 @@ class MDXCSeparator(CommonSeparator):
         elif self.overlap > 50:
             self.logger.warning(f"segment_size {self.overlap} is greater than the maximum allowed value of 50. Setting overlap to 50.")
             self.overlap = 50
-        
+
         self.batch_size = arch_config.get("batch_size", 1)
 
         # Ensure batch_size is within the range [1, 16]

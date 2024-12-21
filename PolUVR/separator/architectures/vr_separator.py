@@ -130,7 +130,6 @@ class VRSeparator(CommonSeparator):
         # Convert the aggression_value to a percentage value
         self.aggression = float(aggression_value / 100)
 
-
         self.aggressiveness = {"value": self.aggression, "split_bin": self.model_params.param["band"][1]["crop_stop"], "aggr_correction": self.model_params.param.get("aggr_correction")}
 
         self.model_samplerate = self.model_params.param["sr"]

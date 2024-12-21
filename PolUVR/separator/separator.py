@@ -92,10 +92,35 @@ class Separator:
         sample_rate=44100,
         use_soundfile=False,
         use_autocast=False,
-        mdx_params={"hop_length": 1024, "segment_size": 256, "overlap": 0.25, "batch_size": 1, "enable_denoise": False},
-        vr_params={"batch_size": 1, "window_size": 512, "aggression": 5, "enable_tta": False, "enable_post_process": False, "post_process_threshold": 0.2, "high_end_process": False},
-        demucs_params={"segment_size": "Default", "shifts": 2, "overlap": 0.25, "segments_enabled": True},
-        mdxc_params={"segment_size": 256, "override_model_segment_size": False, "batch_size": 1, "overlap": 8, "pitch_shift": 0},
+        mdx_params={
+            "hop_length": 1024,
+            "segment_size": 256,
+            "overlap": 0.25,
+            "batch_size": 1,
+            "enable_denoise": False,
+        },
+        vr_params={
+            "batch_size": 1,
+            "window_size": 512,
+            "aggression": 5,
+            "enable_tta": False,
+            "enable_post_process": False,
+            "post_process_threshold": 0.2,
+            "high_end_process": False,
+        },
+        demucs_params={
+            "segment_size": "Default",
+            "shifts": 2,
+            "overlap": 0.25,
+            "segments_enabled": True,
+        },
+        mdxc_params={
+            "segment_size": 256,
+            "override_model_segment_size": False,
+            "batch_size": 1,
+            "overlap": 8,
+            "pitch_shift": 0,
+        },
         info_only=False,
     ):
         """Initialize the separator."""
@@ -399,7 +424,10 @@ class Separator:
                     "target_stem": model_scores.get(filename, {}).get("target_stem"),
                     "download_files": [filename],
                 }  # Just the filename for VR models
-                for name, filename in {**model_downloads_list["vr_download_list"], **PolUVR_models_list["vr_download_list"]}.items()
+                for name, filename in {
+                    **model_downloads_list["vr_download_list"],
+                    **PolUVR_models_list["vr_download_list"],
+                }.items()
             },
             "MDX": {
                 name: {
@@ -409,7 +437,11 @@ class Separator:
                     "target_stem": model_scores.get(filename, {}).get("target_stem"),
                     "download_files": [filename],
                 }  # Just the filename for MDX models
-                for name, filename in {**model_downloads_list["mdx_download_list"], **model_downloads_list["mdx_download_vip_list"], **PolUVR_models_list["mdx_download_list"]}.items()
+                for name, filename in {
+                    **model_downloads_list["mdx_download_list"],
+                    **model_downloads_list["mdx_download_vip_list"],
+                    **PolUVR_models_list["mdx_download_list"],
+                }.items()
             },
             "Demucs": demucs_models,
             "MDXC": {
@@ -488,7 +520,7 @@ class Separator:
                                 self.download_file_if_not_exists(yaml_url, download_path)
                             except RuntimeError:
                                 self.logger.debug("YAML config not found in UVR repo, trying PolUVR models repo...")
-                                yaml_url = f"{audio_separator_models_repo_url_prefix }/{file_to_download}"
+                                yaml_url = f"{audio_separator_models_repo_url_prefix}/{file_to_download}"
                                 self.download_file_if_not_exists(yaml_url, download_path)
                             continue
 
@@ -498,7 +530,7 @@ class Separator:
                             self.download_file_if_not_exists(download_url, download_path)
                         except RuntimeError:
                             self.logger.debug("Model not found in UVR repo, trying PolUVR models repo...")
-                            download_url = f"{audio_separator_models_repo_url_prefix }/{file_to_download}"
+                            download_url = f"{audio_separator_models_repo_url_prefix}/{file_to_download}"
                             self.download_file_if_not_exists(download_url, download_path)
 
                     return model_filename, model_type, model_friendly_name, model_path, yaml_config_filename
