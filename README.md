@@ -49,7 +49,7 @@ If FFmpeg is missing, install it using the following commands:
 |-------------------|---------------------------------------------------------------------------------------------------|
 | **Debian/Ubuntu** | `apt-get update; apt-get install -y ffmpeg`                                                       |
 | **macOS**         | `brew update; brew install ffmpeg`                                                                |
-| **Windows**       | Follow this guide: [Install FFmpeg on Windows](https://www.wikihow.com/Install-FFmpeg-on-Windows) |
+| **Windows**       | Follow this guide: [Install FFmpeg on Windows](https://www.geeksforgeeks.org/how-to-install-ffmpeg-on-windows/) |
 
 If you cloned the repository, you can install FFmpeg with:
 ```sh
