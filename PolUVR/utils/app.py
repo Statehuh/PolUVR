@@ -61,6 +61,7 @@ MDX23C_MODELS = [
     'MDX23C-8KFFT-InstVoc_HQ_2.ckpt',
     'MDX23C_D1581.ckpt',
     'MDX23C-De-Reverb-aufr33-jarredou.ckpt',
+    'MDX23C-DrumSep-aufr33-jarredou.ckpt',
 ]
 #=========================#
 #     MDXN-NET Models     #
