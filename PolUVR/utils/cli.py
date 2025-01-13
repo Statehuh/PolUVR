@@ -5,7 +5,6 @@ import json
 import sys
 import os
 from importlib import metadata
-from typing import Optional
 
 
 def main():
