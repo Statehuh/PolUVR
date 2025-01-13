@@ -6,6 +6,7 @@ import shutil
 import logging
 import subprocess
 import gradio as gr
+import yt_dlp
 
 from PolUVR.separator import Separator
 
@@ -70,7 +71,7 @@ MDXNET_MODELS = {
     'UVR-MDX-NET 1': 'UVR_MDXNET_1_9703.onnx',
     'UVR-MDX-NET 2': 'UVR_MDXNET_2_9682.onnx',
     'UVR-MDX-NET 3': 'UVR_MDXNET_3_9662.onnx',
-    'UVR_MDXNET_9482': 'UVR_MDXNET_9482.onnx',
+    'UVR-MDXNET_9482': 'UVR_MDXNET_9482.onnx',
     'UVR-MDX-NET Inst 1': 'UVR-MDX-NET-Inst_1.onnx',
     'UVR-MDX-NET Inst 2': 'UVR-MDX-NET-Inst_2.onnx',
     'UVR-MDX-NET Inst 3': 'UVR-MDX-NET-Inst_3.onnx',
@@ -202,6 +203,19 @@ def leaderboard(list_filter, list_limit):
     
     except Exception as e:
         return f"Error: {e}"
+
+def download_audio(url):
+    ydl_opts = {
+        'format': 'bestaudio/best',
+        'outtmpl': '%(title)s.%(ext)s',
+        'postprocessors': [{
+            'key': 'FFmpegExtractAudio',
+            'preferredcodec': 'wav',
+        }],
+    }
+    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+        info_dict = ydl.extract_info(url, download=True)
+        return ydl.prepare_filename(info_dict).replace('.webm', '.wav').replace('.mp4', '.wav')
 
 def roformer_separator(audio, model_key, seg_size, override_seg_size, overlap, pitch_shift, model_dir, out_dir, out_format, norm_thresh, amp_thresh, batch_size, vocals_stem, instrumental_stem, other_stem, drums_stem, bass_stem, guitar_stem, piano_stem, progress=gr.Progress(track_tqdm=True)):
     """Separate audio using Roformer model."""
@@ -399,6 +413,45 @@ def show_hide_params(param):
     """Update the visibility of a parameter based on the checkbox state."""
     return gr.update(visible=param)
 
+def process_single_audio(audio, model_key, model_dir, out_dir, out_format, norm_thresh, amp_thresh, vocals_stem, instrumental_stem, other_stem, drums_stem, bass_stem, guitar_stem, piano_stem, progress=gr.Progress(track_tqdm=True)):
+    if model_key in ROFORMER_MODELS:
+        return roformer_separator(audio, model_key, 256, False, 8, 0, model_dir, out_dir, out_format, norm_thresh, amp_thresh, 1, vocals_stem, instrumental_stem, other_stem, drums_stem, bass_stem, guitar_stem, piano_stem, progress)
+    elif model_key in MDX23C_MODELS:
+        return mdx23c_separator(audio, model_key, 256, False, 8, 0, model_dir, out_dir, out_format, norm_thresh, amp_thresh, 1, vocals_stem, instrumental_stem, other_stem, drums_stem, bass_stem, guitar_stem, piano_stem, progress)
+    elif model_key in MDXNET_MODELS:
+        return mdx_separator(audio, model_key, 1024, 256, 0.25, False, model_dir, out_dir, out_format, norm_thresh, amp_thresh, 1, vocals_stem, instrumental_stem, other_stem, drums_stem, bass_stem, guitar_stem, piano_stem, progress)
+    elif model_key in VR_ARCH_MODELS:
+        return vr_separator(audio, model_key, 512, 5, False, False, 0.2, False, model_dir, out_dir, out_format, norm_thresh, amp_thresh, 1, vocals_stem, instrumental_stem, other_stem, drums_stem, bass_stem, guitar_stem, piano_stem, progress)
+    elif model_key in DEMUCS_MODELS:
+        return demucs_separator(audio, model_key, 40, 2, 0.25, True, model_dir, out_dir, out_format, norm_thresh, amp_thresh, vocals_stem, instrumental_stem, other_stem, drums_stem, bass_stem, guitar_stem, piano_stem, progress)
+
+def process_batch_audio(files, model_key, model_dir, out_dir, out_format, norm_thresh, amp_thresh, vocals_stem, instrumental_stem, other_stem, drums_stem, bass_stem, guitar_stem, piano_stem, progress=gr.Progress(track_tqdm=True)):
+    results = []
+    for file in files:
+        if model_key in ROFORMER_MODELS:
+            result = roformer_separator(file, model_key, 256, False, 8, 0, model_dir, out_dir, out_format, norm_thresh, amp_thresh, 1, vocals_stem, instrumental_stem, other_stem, drums_stem, bass_stem, guitar_stem, piano_stem, progress)
+        elif model_key in MDX23C_MODELS:
+            result = mdx23c_separator(file, model_key, 256, False, 8, 0, model_dir, out_dir, out_format, norm_thresh, amp_thresh, 1, vocals_stem, instrumental_stem, other_stem, drums_stem, bass_stem, guitar_stem, piano_stem, progress)
+        elif model_key in MDXNET_MODELS:
+            result = mdx_separator(file, model_key, 1024, 256, 0.25, False, model_dir, out_dir, out_format, norm_thresh, amp_thresh, 1, vocals_stem, instrumental_stem, other_stem, drums_stem, bass_stem, guitar_stem, piano_stem, progress)
+        elif model_key in VR_ARCH_MODELS:
+            result = vr_separator(file, model_key, 512, 5, False, False, 0.2, False, model_dir, out_dir, out_format, norm_thresh, amp_thresh, 1, vocals_stem, instrumental_stem, other_stem, drums_stem, bass_stem, guitar_stem, piano_stem, progress)
+        elif model_key in DEMUCS_MODELS:
+            result = demucs_separator(file, model_key, 40, 2, 0.25, True, model_dir, out_dir, out_format, norm_thresh, amp_thresh, vocals_stem, instrumental_stem, other_stem, drums_stem, bass_stem, guitar_stem, piano_stem, progress)
+        results.extend(result)
+    return results
+
+def process_path_link(path, model_key, model_dir, out_dir, out_format, norm_thresh, amp_thresh, vocals_stem, instrumental_stem, other_stem, drums_stem, bass_stem, guitar_stem, piano_stem, progress=gr.Progress(track_tqdm=True)):
+    if os.path.isfile(path):
+        return process_single_audio(path, model_key, model_dir, out_dir, out_format, norm_thresh, amp_thresh, vocals_stem, instrumental_stem, other_stem, drums_stem, bass_stem, guitar_stem, piano_stem, progress)
+    elif os.path.isdir(path):
+        return process_batch_audio(path, model_key, model_dir, out_dir, out_format, norm_thresh, amp_thresh, vocals_stem, instrumental_stem, other_stem, drums_stem, bass_stem, guitar_stem, piano_stem, progress)
+    elif path.startswith('http'):
+        downloaded_file = download_audio(path)
+        return process_single_audio(downloaded_file, model_key, model_dir, out_dir, out_format, norm_thresh, amp_thresh, vocals_stem, instrumental_stem, other_stem, drums_stem, bass_stem, guitar_stem, piano_stem, progress)
+    else:
+        raise ValueError("Invalid path or URL")
+
 with gr.Blocks(
     title="🎵 PolUVR 🎵",
     css="footer{display:none !important}",
@@ -428,13 +481,33 @@ with gr.Blocks(
                             roformer_batch_size = gr.Slider(minimum=1, maximum=16, step=1, value=1, label="Batch Size", info="Larger consumes more RAM but may process slightly faster.")
                             roformer_norm_threshold = gr.Slider(minimum=0.1, maximum=1, step=0.1, value=0.9, label="Normalization threshold", info="The threshold for audio normalization.")
                             roformer_amp_threshold = gr.Slider(minimum=0.0, maximum=1, step=0.1, value=0.0, label="Amplification threshold", info="The threshold for audio amplification.")
-        with gr.Row():
-            roformer_audio = gr.Audio(label="Input Audio", type="filepath")
-        with gr.Row():
-            roformer_button = gr.Button("Separate!", variant="primary")
-        with gr.Row():
-            roformer_stem1 = gr.Audio(label="Stem 1", type="filepath", interactive=False)
-            roformer_stem2 = gr.Audio(label="Stem 2", type="filepath", interactive=False)
+        
+        with gr.Tabs():
+            with gr.Tab("Single processing"):
+                with gr.Row():
+                    roformer_audio = gr.Audio(label="Input Audio", type="filepath")
+                with gr.Row():
+                    roformer_button = gr.Button("Separate!", variant="primary")
+                with gr.Row():
+                    roformer_stem1 = gr.Audio(label="Stem 1", type="filepath", interactive=False)
+                    roformer_stem2 = gr.Audio(label="Stem 2", type="filepath", interactive=False)
+            
+            with gr.Tab("Batch processing"):
+                with gr.Row():
+                    roformer_batch_audio = gr.Files(label="Input Audio Files", file_types=["audio"])
+                with gr.Row():
+                    roformer_batch_button = gr.Button("Separate!", variant="primary")
+                with gr.Row():
+                    roformer_batch_output = gr.Files(label="Output Files", interactive=False)
+            
+            with gr.Tab("Path / Link"):
+                with gr.Row():
+                    roformer_path_link = gr.Textbox(label="Input Path or Link", placeholder="Enter the path to the audio file, folder, or a link to a video/audio")
+                with gr.Row():
+                    roformer_path_link_button = gr.Button("Separate!", variant="primary")
+                with gr.Row():
+                    roformer_path_link_stem1 = gr.Audio(label="Stem 1", type="filepath", interactive=False)
+                    roformer_path_link_stem2 = gr.Audio(label="Stem 2", type="filepath", interactive=False)
 
     with gr.Tab("MDX23C"):
         with gr.Group():
@@ -455,13 +528,33 @@ with gr.Blocks(
                             mdx23c_batch_size = gr.Slider(minimum=1, maximum=16, step=1, value=1, label="Batch Size", info="Larger consumes more RAM but may process slightly faster.")
                             mdx23c_norm_threshold = gr.Slider(minimum=0.1, maximum=1, step=0.1, value=0.9, label="Normalization threshold", info="The threshold for audio normalization.")
                             mdx23c_amp_threshold = gr.Slider(minimum=0.0, maximum=1, step=0.1, value=0.0, label="Amplification threshold", info="The threshold for audio amplification.")
-        with gr.Row():
-            mdx23c_audio = gr.Audio(label="Input Audio", type="filepath")
-        with gr.Row():
-            mdx23c_button = gr.Button("Separate!", variant="primary")
-        with gr.Row():
-            mdx23c_stem1 = gr.Audio(label="Stem 1", type="filepath", interactive=False)
-            mdx23c_stem2 = gr.Audio(label="Stem 2", type="filepath", interactive=False)
+        
+        with gr.Tabs():
+            with gr.Tab("Single processing"):
+                with gr.Row():
+                    mdx23c_audio = gr.Audio(label="Input Audio", type="filepath")
+                with gr.Row():
+                    mdx23c_button = gr.Button("Separate!", variant="primary")
+                with gr.Row():
+                    mdx23c_stem1 = gr.Audio(label="Stem 1", type="filepath", interactive=False)
+                    mdx23c_stem2 = gr.Audio(label="Stem 2", type="filepath", interactive=False)
+            
+            with gr.Tab("Batch processing"):
+                with gr.Row():
+                    mdx23c_batch_audio = gr.Files(label="Input Audio Files", file_types=["audio"])
+                with gr.Row():
+                    mdx23c_batch_button = gr.Button("Separate!", variant="primary")
+                with gr.Row():
+                    mdx23c_batch_output = gr.Files(label="Output Files", interactive=False)
+            
+            with gr.Tab("Path / Link"):
+                with gr.Row():
+                    mdx23c_path_link = gr.Textbox(label="Input Path or Link", placeholder="Enter the path to the audio file, folder, or a link to a video/audio")
+                with gr.Row():
+                    mdx23c_path_link_button = gr.Button("Separate!", variant="primary")
+                with gr.Row():
+                    mdx23c_path_link_stem1 = gr.Audio(label="Stem 1", type="filepath", interactive=False)
+                    mdx23c_path_link_stem2 = gr.Audio(label="Stem 2", type="filepath", interactive=False)
 
     with gr.Tab("MDX-NET"):
         with gr.Group():
@@ -482,13 +575,33 @@ with gr.Blocks(
                             mdx_batch_size = gr.Slider(minimum=1, maximum=16, step=1, value=1, label="Batch Size", info="Larger consumes more RAM but may process slightly faster.")
                             mdx_norm_threshold = gr.Slider(minimum=0.1, maximum=1, step=0.1, value=0.9, label="Normalization threshold", info="The threshold for audio normalization.")
                             mdx_amp_threshold = gr.Slider(minimum=0.0, maximum=1, step=0.1, value=0.0, label="Amplification threshold", info="The threshold for audio amplification.")
-        with gr.Row():
-            mdx_audio = gr.Audio(label="Input Audio", type="filepath")
-        with gr.Row():
-            mdx_button = gr.Button("Separate!", variant="primary")
-        with gr.Row():
-            mdx_stem1 = gr.Audio(label="Stem 1", type="filepath", interactive=False)
-            mdx_stem2 = gr.Audio(label="Stem 2", type="filepath", interactive=False)
+        
+        with gr.Tabs():
+            with gr.Tab("Single processing"):
+                with gr.Row():
+                    mdx_audio = gr.Audio(label="Input Audio", type="filepath")
+                with gr.Row():
+                    mdx_button = gr.Button("Separate!", variant="primary")
+                with gr.Row():
+                    mdx_stem1 = gr.Audio(label="Stem 1", type="filepath", interactive=False)
+                    mdx_stem2 = gr.Audio(label="Stem 2", type="filepath", interactive=False)
+            
+            with gr.Tab("Batch processing"):
+                with gr.Row():
+                    mdx_batch_audio = gr.Files(label="Input Audio Files", file_types=["audio"])
+                with gr.Row():
+                    mdx_batch_button = gr.Button("Separate!", variant="primary")
+                with gr.Row():
+                    mdx_batch_output = gr.Files(label="Output Files", interactive=False)
+            
+            with gr.Tab("Path / Link"):
+                with gr.Row():
+                    mdx_path_link = gr.Textbox(label="Input Path or Link", placeholder="Enter the path to the audio file, folder, or a link to a video/audio")
+                with gr.Row():
+                    mdx_path_link_button = gr.Button("Separate!", variant="primary")
+                with gr.Row():
+                    mdx_path_link_stem1 = gr.Audio(label="Stem 1", type="filepath", interactive=False)
+                    mdx_path_link_stem2 = gr.Audio(label="Stem 2", type="filepath", interactive=False)
 
     with gr.Tab("VR ARCH"):
         with gr.Group():
@@ -512,13 +625,33 @@ with gr.Blocks(
                             vr_batch_size = gr.Slider(minimum=1, maximum=16, step=1, value=1, label="Batch Size", info="Larger consumes more RAM but may process slightly faster.")
                             vr_norm_threshold = gr.Slider(minimum=0.1, maximum=1, step=0.1, value=0.9, label="Normalization threshold", info="The threshold for audio normalization.")
                             vr_amp_threshold = gr.Slider(minimum=0.0, maximum=1, step=0.1, value=0.0, label="Amplification threshold", info="The threshold for audio amplification.")
-        with gr.Row():
-            vr_audio = gr.Audio(label="Input Audio", type="filepath")
-        with gr.Row():
-            vr_button = gr.Button("Separate!", variant="primary")
-        with gr.Row():
-            vr_stem1 = gr.Audio(label="Stem 1", type="filepath", interactive=False)
-            vr_stem2 = gr.Audio(label="Stem 2", type="filepath", interactive=False)
+        
+        with gr.Tabs():
+            with gr.Tab("Single processing"):
+                with gr.Row():
+                    vr_audio = gr.Audio(label="Input Audio", type="filepath")
+                with gr.Row():
+                    vr_button = gr.Button("Separate!", variant="primary")
+                with gr.Row():
+                    vr_stem1 = gr.Audio(label="Stem 1", type="filepath", interactive=False)
+                    vr_stem2 = gr.Audio(label="Stem 2", type="filepath", interactive=False)
+            
+            with gr.Tab("Batch processing"):
+                with gr.Row():
+                    vr_batch_audio = gr.Files(label="Input Audio Files", file_types=["audio"])
+                with gr.Row():
+                    vr_batch_button = gr.Button("Separate!", variant="primary")
+                with gr.Row():
+                    vr_batch_output = gr.Files(label="Output Files", interactive=False)
+            
+            with gr.Tab("Path / Link"):
+                with gr.Row():
+                    vr_path_link = gr.Textbox(label="Input Path or Link", placeholder="Enter the path to the audio file, folder, or a link to a video/audio")
+                with gr.Row():
+                    vr_path_link_button = gr.Button("Separate!", variant="primary")
+                with gr.Row():
+                    vr_path_link_stem1 = gr.Audio(label="Stem 1", type="filepath", interactive=False)
+                    vr_path_link_stem2 = gr.Audio(label="Stem 2", type="filepath", interactive=False)
 
     with gr.Tab("Demucs"):
         with gr.Group():
@@ -538,19 +671,45 @@ with gr.Blocks(
                         with gr.Row():
                             demucs_norm_threshold = gr.Slider(minimum=0.1, maximum=1, step=0.1, value=0.9, label="Normalization threshold", info="The threshold for audio normalization.")
                             demucs_amp_threshold = gr.Slider(minimum=0.0, maximum=1, step=0.1, value=0.0, label="Amplification threshold", info="The threshold for audio amplification.")
-        with gr.Row():
-            demucs_audio = gr.Audio(label="Input Audio", type="filepath")
-        with gr.Row():
-            demucs_button = gr.Button("Separate!", variant="primary")
-        with gr.Row():
-            demucs_stem1 = gr.Audio(label="Stem 1", type="filepath", interactive=False)
-            demucs_stem2 = gr.Audio(label="Stem 2", type="filepath", interactive=False)
-        with gr.Row():
-            demucs_stem3 = gr.Audio(label="Stem 3", type="filepath", interactive=False)
-            demucs_stem4 = gr.Audio(label="Stem 4", type="filepath", interactive=False)
-        with gr.Row(visible=False) as stem6:
-            demucs_stem5 = gr.Audio(label="Stem 5", type="filepath", interactive=False)
-            demucs_stem6 = gr.Audio(label="Stem 6", type="filepath", interactive=False)
+        
+        with gr.Tabs():
+            with gr.Tab("Single processing"):
+                with gr.Row():
+                    demucs_audio = gr.Audio(label="Input Audio", type="filepath")
+                with gr.Row():
+                    demucs_button = gr.Button("Separate!", variant="primary")
+                with gr.Row():
+                    demucs_stem1 = gr.Audio(label="Stem 1", type="filepath", interactive=False)
+                    demucs_stem2 = gr.Audio(label="Stem 2", type="filepath", interactive=False)
+                with gr.Row():
+                    demucs_stem3 = gr.Audio(label="Stem 3", type="filepath", interactive=False)
+                    demucs_stem4 = gr.Audio(label="Stem 4", type="filepath", interactive=False)
+                with gr.Row(visible=False) as stem6:
+                    demucs_stem5 = gr.Audio(label="Stem 5", type="filepath", interactive=False)
+                    demucs_stem6 = gr.Audio(label="Stem 6", type="filepath", interactive=False)
+            
+            with gr.Tab("Batch processing"):
+                with gr.Row():
+                    demucs_batch_audio = gr.Files(label="Input Audio Files", file_types=["audio"])
+                with gr.Row():
+                    demucs_batch_button = gr.Button("Separate!", variant="primary")
+                with gr.Row():
+                    demucs_batch_output = gr.Files(label="Output Files", interactive=False)
+            
+            with gr.Tab("Path / Link"):
+                with gr.Row():
+                    demucs_path_link = gr.Textbox(label="Input Path or Link", placeholder="Enter the path to the audio file, folder, or a link to a video/audio")
+                with gr.Row():
+                    demucs_path_link_button = gr.Button("Separate!", variant="primary")
+                with gr.Row():
+                    demucs_path_link_stem1 = gr.Audio(label="Stem 1", type="filepath", interactive=False)
+                    demucs_path_link_stem2 = gr.Audio(label="Stem 2", type="filepath", interactive=False)
+                with gr.Row():
+                    demucs_path_link_stem3 = gr.Audio(label="Stem 3", type="filepath", interactive=False)
+                    demucs_path_link_stem4 = gr.Audio(label="Stem 4", type="filepath", interactive=False)
+                with gr.Row(visible=False) as stem6:
+                    demucs_path_link_stem5 = gr.Audio(label="Stem 5", type="filepath", interactive=False)
+                    demucs_path_link_stem6 = gr.Audio(label="Stem 6", type="filepath", interactive=False)
 
     with gr.Tab("Settings"):
         with gr.Group():
@@ -602,20 +761,15 @@ with gr.Blocks(
     list_button.click(leaderboard, inputs=[list_filter, list_limit], outputs=output_list)
 
     roformer_button.click(
-        roformer_separator,
+        process_single_audio,
         inputs=[
             roformer_audio,
             roformer_model,
-            roformer_seg_size,
-            roformer_override_seg_size,
-            roformer_overlap,
-            roformer_pitch_shift,
             model_file_dir,
             output_dir,
             roformer_output_format,
             roformer_norm_threshold,
             roformer_amp_threshold,
-            roformer_batch_size,
             vocals_stem,
             instrumental_stem,
             other_stem,
@@ -626,21 +780,57 @@ with gr.Blocks(
         ],
         outputs=[roformer_stem1, roformer_stem2],
     )
+    roformer_batch_button.click(
+        process_batch_audio,
+        inputs=[
+            roformer_batch_audio,
+            roformer_model,
+            model_file_dir,
+            output_dir,
+            roformer_output_format,
+            roformer_norm_threshold,
+            roformer_amp_threshold,
+            vocals_stem,
+            instrumental_stem,
+            other_stem,
+            drums_stem,
+            bass_stem,
+            guitar_stem,
+            piano_stem,
+        ],
+        outputs=[roformer_batch_output],
+    )
+    roformer_path_link_button.click(
+        process_path_link,
+        inputs=[
+            roformer_path_link,
+            roformer_model,
+            model_file_dir,
+            output_dir,
+            roformer_output_format,
+            roformer_norm_threshold,
+            roformer_amp_threshold,
+            vocals_stem,
+            instrumental_stem,
+            other_stem,
+            drums_stem,
+            bass_stem,
+            guitar_stem,
+            piano_stem,
+        ],
+        outputs=[roformer_path_link_stem1, roformer_path_link_stem2],
+    )
+
     mdx23c_button.click(
-        mdx23c_separator,
+        process_single_audio,
         inputs=[
             mdx23c_audio,
             mdx23c_model,
-            mdx23c_seg_size,
-            mdx23c_override_seg_size,
-            mdx23c_overlap,
-            mdx23c_pitch_shift,
             model_file_dir,
             output_dir,
             mdx23c_output_format,
             mdx23c_norm_threshold,
             mdx23c_amp_threshold,
-            mdx23c_batch_size,
             vocals_stem,
             instrumental_stem,
             other_stem,
@@ -651,21 +841,57 @@ with gr.Blocks(
         ],
         outputs=[mdx23c_stem1, mdx23c_stem2],
     )
+    mdx23c_batch_button.click(
+        process_batch_audio,
+        inputs=[
+            mdx23c_batch_audio,
+            mdx23c_model,
+            model_file_dir,
+            output_dir,
+            mdx23c_output_format,
+            mdx23c_norm_threshold,
+            mdx23c_amp_threshold,
+            vocals_stem,
+            instrumental_stem,
+            other_stem,
+            drums_stem,
+            bass_stem,
+            guitar_stem,
+            piano_stem,
+        ],
+        outputs=[mdx23c_batch_output],
+    )
+    mdx23c_path_link_button.click(
+        process_path_link,
+        inputs=[
+            mdx23c_path_link,
+            mdx23c_model,
+            model_file_dir,
+            output_dir,
+            mdx23c_output_format,
+            mdx23c_norm_threshold,
+            mdx23c_amp_threshold,
+            vocals_stem,
+            instrumental_stem,
+            other_stem,
+            drums_stem,
+            bass_stem,
+            guitar_stem,
+            piano_stem,
+        ],
+        outputs=[mdx23c_path_link_stem1, mdx23c_path_link_stem2],
+    )
+
     mdx_button.click(
-        mdx_separator,
+        process_single_audio,
         inputs=[
             mdx_audio,
             mdx_model,
-            mdx_hop_length,
-            mdx_seg_size,
-            mdx_overlap,
-            mdx_denoise,
             model_file_dir,
             output_dir,
             mdx_output_format,
             mdx_norm_threshold,
             mdx_amp_threshold,
-            mdx_batch_size,
             vocals_stem,
             instrumental_stem,
             other_stem,
@@ -676,23 +902,57 @@ with gr.Blocks(
         ],
         outputs=[mdx_stem1, mdx_stem2],
     )
+    mdx_batch_button.click(
+        process_batch_audio,
+        inputs=[
+            mdx_batch_audio,
+            mdx_model,
+            model_file_dir,
+            output_dir,
+            mdx_output_format,
+            mdx_norm_threshold,
+            mdx_amp_threshold,
+            vocals_stem,
+            instrumental_stem,
+            other_stem,
+            drums_stem,
+            bass_stem,
+            guitar_stem,
+            piano_stem,
+        ],
+        outputs=[mdx_batch_output],
+    )
+    mdx_path_link_button.click(
+        process_path_link,
+        inputs=[
+            mdx_path_link,
+            mdx_model,
+            model_file_dir,
+            output_dir,
+            mdx_output_format,
+            mdx_norm_threshold,
+            mdx_amp_threshold,
+            vocals_stem,
+            instrumental_stem,
+            other_stem,
+            drums_stem,
+            bass_stem,
+            guitar_stem,
+            piano_stem,
+        ],
+        outputs=[mdx_path_link_stem1, mdx_path_link_stem2],
+    )
+
     vr_button.click(
-        vr_separator,
+        process_single_audio,
         inputs=[
             vr_audio,
             vr_model,
-            vr_window_size,
-            vr_aggression,
-            vr_tta,
-            vr_post_process,
-            vr_post_process_threshold,
-            vr_high_end_process,
             model_file_dir,
             output_dir,
             vr_output_format,
             vr_norm_threshold,
             vr_amp_threshold,
-            vr_batch_size,
             vocals_stem,
             instrumental_stem,
             other_stem,
@@ -703,15 +963,52 @@ with gr.Blocks(
         ],
         outputs=[vr_stem1, vr_stem2],
     )
+    vr_batch_button.click(
+        process_batch_audio,
+        inputs=[
+            vr_batch_audio,
+            vr_model,
+            model_file_dir,
+            output_dir,
+            vr_output_format,
+            vr_norm_threshold,
+            vr_amp_threshold,
+            vocals_stem,
+            instrumental_stem,
+            other_stem,
+            drums_stem,
+            bass_stem,
+            guitar_stem,
+            piano_stem,
+        ],
+        outputs=[vr_batch_output],
+    )
+    vr_path_link_button.click(
+        process_path_link,
+        inputs=[
+            vr_path_link,
+            vr_model,
+            model_file_dir,
+            output_dir,
+            vr_output_format,
+            vr_norm_threshold,
+            vr_amp_threshold,
+            vocals_stem,
+            instrumental_stem,
+            other_stem,
+            drums_stem,
+            bass_stem,
+            guitar_stem,
+            piano_stem,
+        ],
+        outputs=[vr_path_link_stem1, vr_path_link_stem2],
+    )
+
     demucs_button.click(
-        demucs_separator,
+        process_single_audio,
         inputs=[
             demucs_audio,
             demucs_model,
-            demucs_seg_size,
-            demucs_shifts,
-            demucs_overlap,
-            demucs_segments_enabled,
             model_file_dir,
             output_dir,
             demucs_output_format,
@@ -726,6 +1023,46 @@ with gr.Blocks(
             piano_stem,
         ],
         outputs=[demucs_stem1, demucs_stem2, demucs_stem3, demucs_stem4, demucs_stem5, demucs_stem6],
+    )
+    demucs_batch_button.click(
+        process_batch_audio,
+        inputs=[
+            demucs_batch_audio,
+            demucs_model,
+            model_file_dir,
+            output_dir,
+            demucs_output_format,
+            demucs_norm_threshold,
+            demucs_amp_threshold,
+            vocals_stem,
+            instrumental_stem,
+            other_stem,
+            drums_stem,
+            bass_stem,
+            guitar_stem,
+            piano_stem,
+        ],
+        outputs=[demucs_batch_output],
+    )
+    demucs_path_link_button.click(
+        process_path_link,
+        inputs=[
+            demucs_path_link,
+            demucs_model,
+            model_file_dir,
+            output_dir,
+            demucs_output_format,
+            demucs_norm_threshold,
+            demucs_amp_threshold,
+            vocals_stem,
+            instrumental_stem,
+            other_stem,
+            drums_stem,
+            bass_stem,
+            guitar_stem,
+            piano_stem,
+        ],
+        outputs=[demucs_path_link_stem1, demucs_path_link_stem2, demucs_path_link_stem3, demucs_path_link_stem4, demucs_path_link_stem5, demucs_path_link_stem6],
     )
 
 def main():
