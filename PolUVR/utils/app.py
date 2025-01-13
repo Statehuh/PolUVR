@@ -149,6 +149,8 @@ DEMUCS_MODELS = {
     'hdemucs_mmi': 'hdemucs_mmi.yaml',
 }
 
+OUTPUT_FORMAT = ["wav", "flac", "mp3", "ogg", "opus", "m4a", "aiff", "ac3"]
+
 def print_message(input_file, model_name):
     """Prints information about the audio separation process."""
     base_name = os.path.splitext(os.path.basename(input_file))[0]
@@ -413,7 +415,7 @@ with gr.Blocks(
         with gr.Group():
             with gr.Row():
                 roformer_model = gr.Dropdown(value="MelBand Roformer Kim | Big Beta 5e FT by unwa", label="Select the Model", choices=list(ROFORMER_MODELS.keys()), scale=3)
-                roformer_output_format = gr.Dropdown(value="wav", choices=["wav", "flac", "mp3"], label="Output Format", info="The format of the output audio file.", scale=1)
+                roformer_output_format = gr.Dropdown(value="wav", choices=OUTPUT_FORMAT, label="Output Format", info="The format of the output audio file.", scale=1)
             with gr.Accordion("Advanced settings", open=False):
                 with gr.Column(variant='panel'):
                     with gr.Group():
@@ -440,7 +442,7 @@ with gr.Blocks(
         with gr.Group():
             with gr.Row():
                 mdx23c_model = gr.Dropdown(value="MDX23C-InstVoc HQ", label="Select the Model", choices=list(MDX23C_MODELS.keys()), scale=3)
-                mdx23c_output_format = gr.Dropdown(value="wav", choices=["wav", "flac", "mp3"], label="Output Format", info="The format of the output audio file.", scale=1)
+                mdx23c_output_format = gr.Dropdown(value="wav", choices=OUTPUT_FORMAT, label="Output Format", info="The format of the output audio file.", scale=1)
             with gr.Accordion("Advanced settings", open=False):
                 with gr.Column(variant='panel'):
                     with gr.Group():
@@ -467,7 +469,7 @@ with gr.Blocks(
         with gr.Group():
             with gr.Row():
                 mdx_model = gr.Dropdown(value="UVR-MDX-NET Inst HQ 5", label="Select the Model", choices=list(MDXNET_MODELS.keys()), scale=3)
-                mdx_output_format = gr.Dropdown(value="wav", choices=["wav", "flac", "mp3"], label="Output Format", info="The format of the output audio file.", scale=1)
+                mdx_output_format = gr.Dropdown(value="wav", choices=OUTPUT_FORMAT, label="Output Format", info="The format of the output audio file.", scale=1)
             with gr.Accordion("Advanced settings", open=False):
                 with gr.Column(variant='panel'):
                     with gr.Group():
@@ -494,7 +496,7 @@ with gr.Blocks(
         with gr.Group():
             with gr.Row():
                 vr_model = gr.Dropdown(value="1_HP-UVR", label="Select the Model", choices=list(VR_ARCH_MODELS.keys()), scale=3)
-                vr_output_format = gr.Dropdown(value="wav", choices=["wav", "flac", "mp3"], label="Output Format", info="The format of the output audio file.", scale=1)
+                vr_output_format = gr.Dropdown(value="wav", choices=OUTPUT_FORMAT, label="Output Format", info="The format of the output audio file.", scale=1)
             with gr.Accordion("Advanced settings", open=False):
                 with gr.Column(variant='panel'):
                     with gr.Group():
@@ -524,7 +526,7 @@ with gr.Blocks(
         with gr.Group():
             with gr.Row():
                 demucs_model = gr.Dropdown(value="htdemucs_ft", label="Select the Model", choices=list(DEMUCS_MODELS.keys()), scale=3)
-                demucs_output_format = gr.Dropdown(value="wav", choices=["wav", "flac", "mp3"], label="Output Format", info="The format of the output audio file.", scale=1)
+                demucs_output_format = gr.Dropdown(value="wav", choices=OUTPUT_FORMAT, label="Output Format", info="The format of the output audio file.", scale=1)
             with gr.Accordion("Advanced settings", open=False):
                 with gr.Column(variant='panel'):
                     with gr.Group():
