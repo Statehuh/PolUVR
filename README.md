@@ -153,6 +153,11 @@ or
 poetry install --extras "gpu"
 ```
 
+Install FFmpeg
+```sh
+PolUVR-ffmpeg
+```
+
 ### Running the Gradio interface Locally
 
 ```sh
