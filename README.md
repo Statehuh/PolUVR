@@ -153,7 +153,7 @@ or
 poetry install --extras "gpu"
 ```
 
-Install FFmpeg
+Install FFmpeg:
 ```sh
 PolUVR-ffmpeg
 ```
