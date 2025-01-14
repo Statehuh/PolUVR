@@ -2,7 +2,7 @@ import os
 import platform
 import subprocess
 import urllib.request
-
+from tqdm import tqdm
 
 def install_ffmpeg():
     system = platform.system()
@@ -24,7 +24,12 @@ def install_ffmpeg():
         ]
         for url in urls:
             filename = os.path.basename(url.split('?')[0])
-            urllib.request.urlretrieve(url, filename)
+            with tqdm(unit='B', unit_scale=True, unit_divisor=1024, desc=filename) as t:
+                def progress_hook(count, block_size, total_size):
+                    t.total = total_size
+                    t.update(block_size)
+
+                urllib.request.urlretrieve(url, filename, reporthook=progress_hook)
     else:
         print(f"Unsupported OS: {system}")
 
