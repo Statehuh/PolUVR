@@ -195,14 +195,14 @@ def leaderboard(list_filter, list_limit):
         )
         if result.returncode != 0:
             return f"Error: {result.stderr}"
-        
+
         return "<table border='1'>" + "".join(
-            f"<tr style='{'font-weight: bold; font-size: 1.2em;' if i == 0 else ''}'>" + 
-            "".join(f"<td>{cell}</td>" for cell in re.split(r"\s{2,}", line.strip())) + 
-            "</tr>" 
+            f"<tr style='{'font-weight: bold; font-size: 1.2em;' if i == 0 else ''}'>" +
+            "".join(f"<td>{cell}</td>" for cell in re.split(r"\s{2,}", line.strip())) +
+            "</tr>"
             for i, line in enumerate(re.findall(r"^(?!-+)(.+)$", result.stdout.strip(), re.MULTILINE))
         ) + "</table>"
-    
+
     except Exception as e:
         return f"Error: {e}"
 
@@ -267,7 +267,10 @@ def roformer_separator(audio, model_key, seg_size, override_seg_size, overlap, p
         print(f"Separation complete!\nResults: {', '.join(separation)}")
 
         stems = [os.path.join(out_dir, file_name) for file_name in separation]
-        return stems, stems[0], stems[1]
+        if len(stems) == 2:
+            return None, stems[0], stems[1]
+        else:
+            return stems, None, None
     except Exception as e:
         raise RuntimeError(f"Roformer separation failed: {e}") from e
 
@@ -449,12 +452,32 @@ def show_hide_params(param):
 
 def process_file_upload(file):
     if isinstance(file, list):
-        file_paths = [f.name for f in file]
-        return ", ".join(file_paths)
-    else:
+        return [f.name for f in file]
+    elif hasattr(file, 'name'):
         return file.name
+    else:
+        return file
 
 def toggle_single_processing():
+    return (
+        gr.update(visible=True), gr.update(visible=False), gr.update(visible=False),
+        gr.update(visible=True), gr.update(visible=True), gr.update(visible=False),
+        gr.update(interactive=False), gr.update(interactive=True), gr.update(interactive=True),
+    )
+def toggle_batch_processing():
+    return (
+        gr.update(visible=False), gr.update(visible=True), gr.update(visible=False),
+        gr.update(visible=False), gr.update(visible=False), gr.update(visible=True),
+        gr.update(interactive=True), gr.update(interactive=False), gr.update(interactive=True),
+    )
+def toggle_path_link_processing():
+    return (
+        gr.update(visible=False), gr.update(visible=False), gr.update(visible=True),
+        gr.update(visible=False), gr.update(visible=False), gr.update(visible=True),
+        gr.update(interactive=True), gr.update(interactive=True), gr.update(interactive=False),
+    )
+
+def toggle_single_processing_demucs():
     return (
         gr.update(visible=True), gr.update(visible=False), gr.update(visible=False),
         gr.update(visible=True), gr.update(visible=True), gr.update(visible=True),
@@ -462,7 +485,7 @@ def toggle_single_processing():
         gr.update(visible=False),
         gr.update(interactive=False), gr.update(interactive=True), gr.update(interactive=True),
     )
-def toggle_batch_processing():
+def toggle_batch_processing_demucs():
     return (
         gr.update(visible=False), gr.update(visible=True), gr.update(visible=False),
         gr.update(visible=False), gr.update(visible=False), gr.update(visible=False),
@@ -470,7 +493,7 @@ def toggle_batch_processing():
         gr.update(visible=True),
         gr.update(interactive=True), gr.update(interactive=False), gr.update(interactive=True),
     )
-def toggle_path_link_processing():
+def toggle_path_link_processing_demucs():
     return (
         gr.update(visible=False), gr.update(visible=False), gr.update(visible=True),
         gr.update(visible=False), gr.update(visible=False), gr.update(visible=False),
@@ -659,7 +682,6 @@ with gr.Blocks(
         with gr.Row():
             demucs_stem1 = gr.Audio(label="Stem 1", type="filepath", interactive=False, visible=True)
             demucs_stem2 = gr.Audio(label="Stem 2", type="filepath", interactive=False, visible=True)
-        with gr.Row():
             demucs_stem3 = gr.Audio(label="Stem 3", type="filepath", interactive=False, visible=True)
             demucs_stem4 = gr.Audio(label="Stem 4", type="filepath", interactive=False, visible=True)
             demucs_output = gr.Files(label="Output Files", interactive=False, visible=False)
@@ -731,7 +753,7 @@ with gr.Blocks(
         toggle_single_processing,
         outputs=[
             roformer_audio_single, roformer_batch_audio, roformer_audio_path_link,
-            roformer_stem1, roformer_stem2, None, None, None, None, roformer_output,
+            roformer_stem1, roformer_stem2, roformer_output,
             roformer_single_process_btn, roformer_batch_process_btn, roformer_path_link_process_btn,
         ]
     )
@@ -739,7 +761,7 @@ with gr.Blocks(
         toggle_batch_processing,
         outputs=[
             roformer_audio_single, roformer_batch_audio, roformer_audio_path_link,
-            roformer_stem1, roformer_stem2, None, None, None, None, roformer_output,
+            roformer_stem1, roformer_stem2, roformer_output,
             roformer_single_process_btn, roformer_batch_process_btn, roformer_path_link_process_btn,
         ]
     )
@@ -747,7 +769,7 @@ with gr.Blocks(
         toggle_path_link_processing,
         outputs=[
             roformer_audio_single, roformer_batch_audio, roformer_audio_path_link,
-            roformer_stem1, roformer_stem2, None, None, None, None, roformer_output,
+            roformer_stem1, roformer_stem2, roformer_output,
             roformer_single_process_btn, roformer_batch_process_btn, roformer_path_link_process_btn,
         ]
     )
@@ -756,7 +778,7 @@ with gr.Blocks(
         toggle_single_processing,
         outputs=[
             mdx23c_audio_single, mdx23c_batch_audio, mdx23c_audio_path_link,
-            mdx23c_stem1, mdx23c_stem2, None, None, None, None, mdx23c_output,
+            mdx23c_stem1, mdx23c_stem2, mdx23c_output,
             mdx23c_single_process_btn, mdx23c_batch_process_btn, mdx23c_path_link_process_btn,
         ]
     )
@@ -764,7 +786,7 @@ with gr.Blocks(
         toggle_batch_processing,
         outputs=[
             mdx23c_audio_single, mdx23c_batch_audio, mdx23c_audio_path_link,
-            mdx23c_stem1, mdx23c_stem2, None, None, None, None, mdx23c_output,
+            mdx23c_stem1, mdx23c_stem2, mdx23c_output,
             mdx23c_single_process_btn, mdx23c_batch_process_btn, mdx23c_path_link_process_btn,
         ]
     )
@@ -772,7 +794,7 @@ with gr.Blocks(
         toggle_path_link_processing,
         outputs=[
             mdx23c_audio_single, mdx23c_batch_audio, mdx23c_audio_path_link,
-            mdx23c_stem1, mdx23c_stem2, None, None, None, None, mdx23c_output,
+            mdx23c_stem1, mdx23c_stem2, mdx23c_output,
             mdx23c_single_process_btn, mdx23c_batch_process_btn, mdx23c_path_link_process_btn,
         ]
     )
@@ -781,7 +803,7 @@ with gr.Blocks(
         toggle_single_processing,
         outputs=[
             mdx_audio_single, mdx_batch_audio, mdx_audio_path_link,
-            mdx_stem1, mdx_stem2, None, None, None, None, mdx_output,
+            mdx_stem1, mdx_stem2, mdx_output,
             mdx_single_process_btn, mdx_batch_process_btn, mdx_path_link_process_btn,
         ]
     )
@@ -789,7 +811,7 @@ with gr.Blocks(
         toggle_batch_processing,
         outputs=[
             mdx_audio_single, mdx_batch_audio, mdx_audio_path_link,
-            mdx_stem1, mdx_stem2, None, None, None, None, mdx_output,
+            mdx_stem1, mdx_stem2, mdx_output,
             mdx_single_process_btn, mdx_batch_process_btn, mdx_path_link_process_btn,
         ]
     )
@@ -797,7 +819,7 @@ with gr.Blocks(
         toggle_path_link_processing,
         outputs=[
             mdx_audio_single, mdx_batch_audio, mdx_audio_path_link,
-            mdx_stem1, mdx_stem2, None, None, None, None, mdx_output,
+            mdx_stem1, mdx_stem2, mdx_output,
             mdx_single_process_btn, mdx_batch_process_btn, mdx_path_link_process_btn,
         ]
     )
@@ -806,7 +828,7 @@ with gr.Blocks(
         toggle_single_processing,
         outputs=[
             vr_audio_single, vr_batch_audio, vr_audio_path_link,
-            vr_stem1, vr_stem2, None, None, None, None, vr_output,
+            vr_stem1, vr_stem2, vr_output,
             vr_single_process_btn, vr_batch_process_btn, vr_path_link_process_btn,
         ]
     )
@@ -814,7 +836,7 @@ with gr.Blocks(
         toggle_batch_processing,
         outputs=[
             vr_audio_single, vr_batch_audio, vr_audio_path_link,
-            vr_stem1, vr_stem2, None, None, None, None, vr_output,
+            vr_stem1, vr_stem2, vr_output,
             vr_single_process_btn, vr_batch_process_btn, vr_path_link_process_btn,
         ]
     )
@@ -822,13 +844,13 @@ with gr.Blocks(
         toggle_path_link_processing,
         outputs=[
             vr_audio_single, vr_batch_audio, vr_audio_path_link,
-            vr_stem1, vr_stem2, None, None, None, None, vr_output,
+            vr_stem1, vr_stem2, vr_output,
             vr_single_process_btn, vr_batch_process_btn, vr_path_link_process_btn,
         ]
     )
 
     demucs_single_process_btn.click(
-        toggle_single_processing,
+        toggle_single_processing_demucs,
         outputs=[
             demucs_audio_single, demucs_batch_audio, demucs_audio_path_link,
             demucs_stem1, demucs_stem2, demucs_stem3, demucs_stem4, demucs_stem5, demucs_stem6, demucs_output,
@@ -836,7 +858,7 @@ with gr.Blocks(
         ]
     )
     demucs_batch_process_btn.click(
-        toggle_batch_processing,
+        toggle_batch_processing_demucs,
         outputs=[
             demucs_audio_single, demucs_batch_audio, demucs_audio_path_link,
             demucs_stem1, demucs_stem2, demucs_stem3, demucs_stem4, demucs_stem5, demucs_stem6, demucs_output,
@@ -844,7 +866,7 @@ with gr.Blocks(
         ]
     )
     demucs_path_link_process_btn.click(
-        toggle_path_link_processing,
+        toggle_path_link_processing_demucs,
         outputs=[
             demucs_audio_single, demucs_batch_audio, demucs_audio_path_link,
             demucs_stem1, demucs_stem2, demucs_stem3, demucs_stem4, demucs_stem5, demucs_stem6, demucs_output,
