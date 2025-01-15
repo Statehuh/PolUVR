@@ -448,7 +448,36 @@ def show_hide_params(param):
     return gr.update(visible=param)
 
 def process_file_upload(file):
-    return file.name, gr.update(value=file.name)
+    if isinstance(file, list):
+        file_paths = [f.name for f in file]
+        return ", ".join(file_paths)
+    else:
+        return file.name
+
+def toggle_single_processing():
+    return (
+        gr.update(visible=True), gr.update(visible=False), gr.update(visible=False),
+        gr.update(visible=True), gr.update(visible=True), gr.update(visible=True),
+        gr.update(visible=True), gr.update(visible=True), gr.update(visible=True),
+        gr.update(visible=False),
+        gr.update(interactive=False), gr.update(interactive=True), gr.update(interactive=True),
+    )
+def toggle_batch_processing():
+    return (
+        gr.update(visible=False), gr.update(visible=True), gr.update(visible=False),
+        gr.update(visible=False), gr.update(visible=False), gr.update(visible=False),
+        gr.update(visible=False), gr.update(visible=False), gr.update(visible=False),
+        gr.update(visible=True),
+        gr.update(interactive=True), gr.update(interactive=False), gr.update(interactive=True),
+    )
+def toggle_path_link_processing():
+    return (
+        gr.update(visible=False), gr.update(visible=False), gr.update(visible=True),
+        gr.update(visible=False), gr.update(visible=False), gr.update(visible=False),
+        gr.update(visible=False), gr.update(visible=False), gr.update(visible=False),
+        gr.update(visible=True),
+        gr.update(interactive=True), gr.update(interactive=True), gr.update(interactive=False),
+    )
 
 with gr.Blocks(
     title="🎵 PolUVR 🎵",
@@ -679,6 +708,17 @@ with gr.Blocks(
 
         output_list = gr.HTML(label="Leaderboard")
 
+    roformer_audio_single.change(process_file_upload, inputs=roformer_audio_single, outputs=roformer_audio_path_link)
+    roformer_batch_audio.change(process_file_upload, inputs=roformer_batch_audio, outputs=roformer_audio_path_link)
+    mdx23c_audio_single.change(process_file_upload, inputs=mdx23c_audio_single, outputs=mdx23c_audio_path_link)
+    mdx23c_batch_audio.change(process_file_upload, inputs=mdx23c_batch_audio, outputs=mdx23c_audio_path_link)
+    mdx_batch_audio.change(process_file_upload, inputs=mdx_audio_single, outputs=mdx_audio_path_link)
+    mdx_batch_audio.change(process_file_upload, inputs=mdx_batch_audio, outputs=mdx_audio_path_link)
+    vr_audio_single.change(process_file_upload, inputs=vr_audio_single, outputs=vr_audio_path_link)
+    vr_batch_audio.change(process_file_upload, inputs=vr_batch_audio, outputs=vr_audio_path_link)
+    demucs_audio_single.change(process_file_upload, inputs=demucs_audio_single, outputs=demucs_audio_path_link)
+    demucs_batch_audio.change(process_file_upload, inputs=demucs_batch_audio, outputs=demucs_audio_path_link)
+
     roformer_override_seg_size.change(show_hide_params, inputs=[roformer_override_seg_size], outputs=[roformer_seg_size])
     mdx23c_override_seg_size.change(show_hide_params, inputs=[mdx23c_override_seg_size], outputs=[mdx23c_seg_size])
     vr_post_process.change(show_hide_params, inputs=[vr_post_process], outputs=[vr_post_process_threshold])
@@ -686,6 +726,131 @@ with gr.Blocks(
     demucs_model.change(update_stems, inputs=[demucs_model], outputs=stem6)
 
     list_button.click(leaderboard, inputs=[list_filter, list_limit], outputs=output_list)
+
+    roformer_single_process_btn.click(
+        toggle_single_processing,
+        outputs=[
+            roformer_audio_single, roformer_batch_audio, roformer_audio_path_link,
+            roformer_stem1, roformer_stem2, None, None, None, None, roformer_output,
+            roformer_single_process_btn, roformer_batch_process_btn, roformer_path_link_process_btn,
+        ]
+    )
+    roformer_batch_process_btn.click(
+        toggle_batch_processing,
+        outputs=[
+            roformer_audio_single, roformer_batch_audio, roformer_audio_path_link,
+            roformer_stem1, roformer_stem2, None, None, None, None, roformer_output,
+            roformer_single_process_btn, roformer_batch_process_btn, roformer_path_link_process_btn,
+        ]
+    )
+    roformer_path_link_process_btn.click(
+        toggle_path_link_processing,
+        outputs=[
+            roformer_audio_single, roformer_batch_audio, roformer_audio_path_link,
+            roformer_stem1, roformer_stem2, None, None, None, None, roformer_output,
+            roformer_single_process_btn, roformer_batch_process_btn, roformer_path_link_process_btn,
+        ]
+    )
+
+    mdx23c_single_process_btn.click(
+        toggle_single_processing,
+        outputs=[
+            mdx23c_audio_single, mdx23c_batch_audio, mdx23c_audio_path_link,
+            mdx23c_stem1, mdx23c_stem2, None, None, None, None, mdx23c_output,
+            mdx23c_single_process_btn, mdx23c_batch_process_btn, mdx23c_path_link_process_btn,
+        ]
+    )
+    mdx23c_batch_process_btn.click(
+        toggle_batch_processing,
+        outputs=[
+            mdx23c_audio_single, mdx23c_batch_audio, mdx23c_audio_path_link,
+            mdx23c_stem1, mdx23c_stem2, None, None, None, None, mdx23c_output,
+            mdx23c_single_process_btn, mdx23c_batch_process_btn, mdx23c_path_link_process_btn,
+        ]
+    )
+    mdx23c_path_link_process_btn.click(
+        toggle_path_link_processing,
+        outputs=[
+            mdx23c_audio_single, mdx23c_batch_audio, mdx23c_audio_path_link,
+            mdx23c_stem1, mdx23c_stem2, None, None, None, None, mdx23c_output,
+            mdx23c_single_process_btn, mdx23c_batch_process_btn, mdx23c_path_link_process_btn,
+        ]
+    )
+
+    mdx_single_process_btn.click(
+        toggle_single_processing,
+        outputs=[
+            mdx_audio_single, mdx_batch_audio, mdx_audio_path_link,
+            mdx_stem1, mdx_stem2, None, None, None, None, mdx_output,
+            mdx_single_process_btn, mdx_batch_process_btn, mdx_path_link_process_btn,
+        ]
+    )
+    mdx_batch_process_btn.click(
+        toggle_batch_processing,
+        outputs=[
+            mdx_audio_single, mdx_batch_audio, mdx_audio_path_link,
+            mdx_stem1, mdx_stem2, None, None, None, None, mdx_output,
+            mdx_single_process_btn, mdx_batch_process_btn, mdx_path_link_process_btn,
+        ]
+    )
+    mdx_path_link_process_btn.click(
+        toggle_path_link_processing,
+        outputs=[
+            mdx_audio_single, mdx_batch_audio, mdx_audio_path_link,
+            mdx_stem1, mdx_stem2, None, None, None, None, mdx_output,
+            mdx_single_process_btn, mdx_batch_process_btn, mdx_path_link_process_btn,
+        ]
+    )
+
+    vr_single_process_btn.click(
+        toggle_single_processing,
+        outputs=[
+            vr_audio_single, vr_batch_audio, vr_audio_path_link,
+            vr_stem1, vr_stem2, None, None, None, None, vr_output,
+            vr_single_process_btn, vr_batch_process_btn, vr_path_link_process_btn,
+        ]
+    )
+    vr_batch_process_btn.click(
+        toggle_batch_processing,
+        outputs=[
+            vr_audio_single, vr_batch_audio, vr_audio_path_link,
+            vr_stem1, vr_stem2, None, None, None, None, vr_output,
+            vr_single_process_btn, vr_batch_process_btn, vr_path_link_process_btn,
+        ]
+    )
+    vr_path_link_process_btn.click(
+        toggle_path_link_processing,
+        outputs=[
+            vr_audio_single, vr_batch_audio, vr_audio_path_link,
+            vr_stem1, vr_stem2, None, None, None, None, vr_output,
+            vr_single_process_btn, vr_batch_process_btn, vr_path_link_process_btn,
+        ]
+    )
+
+    demucs_single_process_btn.click(
+        toggle_single_processing,
+        outputs=[
+            demucs_audio_single, demucs_batch_audio, demucs_audio_path_link,
+            demucs_stem1, demucs_stem2, demucs_stem3, demucs_stem4, demucs_stem5, demucs_stem6, demucs_output,
+            demucs_single_process_btn, demucs_batch_process_btn, demucs_path_link_process_btn,
+        ]
+    )
+    demucs_batch_process_btn.click(
+        toggle_batch_processing,
+        outputs=[
+            demucs_audio_single, demucs_batch_audio, demucs_audio_path_link,
+            demucs_stem1, demucs_stem2, demucs_stem3, demucs_stem4, demucs_stem5, demucs_stem6, demucs_output,
+            demucs_single_process_btn, demucs_batch_process_btn, demucs_path_link_process_btn,
+        ]
+    )
+    demucs_path_link_process_btn.click(
+        toggle_path_link_processing,
+        outputs=[
+            demucs_audio_single, demucs_batch_audio, demucs_audio_path_link,
+            demucs_stem1, demucs_stem2, demucs_stem3, demucs_stem4, demucs_stem5, demucs_stem6, demucs_output,
+            demucs_single_process_btn, demucs_batch_process_btn, demucs_path_link_process_btn,
+        ]
+    )
 
     roformer_button.click(
         roformer_separator,
