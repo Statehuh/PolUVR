@@ -482,7 +482,7 @@ class Separator:
         supported_model_files_grouped = self.list_supported_model_files()
         public_model_repo_url_prefix = "https://github.com/TRvlvr/model_repo/releases/download/all_public_uvr_models"
         vip_model_repo_url_prefix = "https://github.com/Anjok0109/ai_magic/releases/download/v5"
-        audio_separator_models_repo_url_prefix = "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs"
+        PolUVR_models_repo_url_prefix = "https://github.com/Bebra777228/PolUVR/releases/download/model-configs"
 
         yaml_config_filename = None
 
@@ -520,7 +520,7 @@ class Separator:
                                 self.download_file_if_not_exists(yaml_url, download_path)
                             except RuntimeError:
                                 self.logger.debug("YAML config not found in UVR repo, trying PolUVR models repo...")
-                                yaml_url = f"{audio_separator_models_repo_url_prefix}/{file_to_download}"
+                                yaml_url = f"{PolUVR_models_repo_url_prefix}/{file_to_download}"
                                 self.download_file_if_not_exists(yaml_url, download_path)
                             continue
 
@@ -530,7 +530,7 @@ class Separator:
                             self.download_file_if_not_exists(download_url, download_path)
                         except RuntimeError:
                             self.logger.debug("Model not found in UVR repo, trying PolUVR models repo...")
-                            download_url = f"{audio_separator_models_repo_url_prefix}/{file_to_download}"
+                            download_url = f"{PolUVR_models_repo_url_prefix}/{file_to_download}"
                             self.download_file_if_not_exists(download_url, download_path)
 
                     return model_filename, model_type, model_friendly_name, model_path, yaml_config_filename
@@ -712,7 +712,7 @@ class Separator:
                 for root, dirs, files in os.walk(path):
                     for file in files:
                         # Check the file extension to ensure it's an audio file
-                        if file.endswith(('.wav', '.mp3', '.flac', '.ogg', '.m4a')):  # Add other formats if needed
+                        if file.endswith((".wav", ".flac", ".mp3", ".ogg", ".opus", ".m4a", ".aiff", ".ac3")):  # Add other formats if needed
                             full_path = os.path.join(root, file)
                             self.logger.info(f"Processing file: {full_path}")
                             try:
