@@ -5,7 +5,7 @@
 
 ## Overview
 
-**PolUVR** is a Python-based audio separation tool that leverages advanced machine learning models to separate audio tracks into distinct stems, such as vocals, instrumental, drums, bass, and more. Built as a fork of the [python-audio-separator](https://github.com/nomadkaraoke/python-PolUVR), PolUVR offers enhanced usability, hardware acceleration, and a user-friendly Gradio interface.
+**PolUVR** is a Python-based audio separation tool that leverages advanced machine learning models to separate audio tracks into distinct stems, such as vocals, instrumental, drums, bass, and more. Built as a fork of the [python-audio-separator](https://github.com/nomadkaraoke/python-audio-separator), PolUVR offers enhanced usability, hardware acceleration, and a user-friendly Gradio interface.
 
 ---
 
@@ -352,4 +352,4 @@ Contributions are welcome! Fork the repository, make your changes, and submit a 
 
 ## Acknowledgments
 
-This project is a fork of the original [python-audio-separator](https://github.com/nomadkaraoke/python-PolUVR) repository. Special thanks to the contributors of the original project for their foundational work.
+This project is a fork of the original [python-audio-separator](https://github.com/nomadkaraoke/python-audio-separator) repository. Special thanks to the contributors of the original project for their foundational work.
