@@ -12,9 +12,7 @@ from PolUVR.separator import Separator
 device = "cuda" if torch.cuda.is_available() else "cpu"
 use_autocast = device == "cuda"
 
-#=========================#
-#     Roformer Models     #
-#=========================#
+# ===== Roformer Models ===== #
 ROFORMER_MODELS = {
     # BS Roformer
     'BS-Roformer-Viperx-1053': 'model_bs_roformer_ep_937_sdr_10.5309.ckpt',
@@ -46,6 +44,7 @@ ROFORMER_MODELS = {
     # MelBand Roformer Kim
     'MelBand Roformer Kim | FT by unwa': 'mel_band_roformer_kim_ft_unwa.ckpt',
     'MelBand Roformer Kim | FT 2 by unwa': 'mel_band_roformer_kim_ft2_unwa.ckpt',
+    'MelBand Roformer Kim | FT 2 Bleedless by unwa': 'mel_band_roformer_kim_ft2_bleedless_unwa.ckpt',
     'MelBand Roformer Kim | Big Beta 4 FT by unwa': 'melband_roformer_big_beta4.ckpt',
     'MelBand Roformer Kim | Big Beta 5e FT by unwa': 'melband_roformer_big_beta5e.ckpt',
     'MelBand Roformer Kim | Inst V1 by Unwa': 'melband_roformer_inst_v1.ckpt',
@@ -59,9 +58,7 @@ ROFORMER_MODELS = {
     'MelBand Roformer Kim | SYHFT V3 by SYH99999': 'MelBandRoformerSYHFTV3Epsilon.ckpt',
     'MelBand Roformer Kim | Big SYHFT V1 by SYH99999': 'MelBandRoformerBigSYHFTV1.ckpt',
 }
-#=========================#
-#      MDX23C Models      #
-#=========================#
+# ===== MDX23C Models ===== #
 MDX23C_MODELS = {
     'MDX23C DrumSep by aufr33-jarredou': 'MDX23C-DrumSep-aufr33-jarredou.ckpt',
     'MDX23C De-Reverb by aufr33-jarredou': 'MDX23C-De-Reverb-aufr33-jarredou.ckpt',
@@ -69,9 +66,7 @@ MDX23C_MODELS = {
     'VIP | MDX23C-InstVoc HQ 2': 'MDX23C-8KFFT-InstVoc_HQ_2.ckpt',
     'VIP | MDX23C_D1581': 'MDX23C_D1581.ckpt',
 }
-#=========================#
-#     MDXN-NET Models     #
-#=========================#
+# ===== MDXN-NET Models ===== #
 MDXNET_MODELS = {
     'UVR-MDX-NET 1': 'UVR_MDXNET_1_9703.onnx',
     'UVR-MDX-NET 2': 'UVR_MDXNET_2_9682.onnx',
@@ -112,9 +107,7 @@ MDXNET_MODELS = {
     'VIP | UVR-MDX-NET_Main_427': 'UVR-MDX-NET_Main_427.onnx',
     'VIP | UVR-MDX-NET_Main_438': 'UVR-MDX-NET_Main_438.onnx',
 }
-#========================#
-#     VR-ARCH Models     #
-#========================#
+# ===== VR-ARCH Models ===== #
 VR_ARCH_MODELS = {
     '1_HP-UVR': '1_HP-UVR.pth',
     '2_HP-UVR': '2_HP-UVR.pth',
@@ -145,9 +138,7 @@ VR_ARCH_MODELS = {
     'UVR-DeNoise-Lite by FoxJoy': 'UVR-DeNoise-Lite.pth',
     'UVR-DeNoise by FoxJoy': 'UVR-DeNoise.pth',
 }
-#=======================#
-#     DEMUCS Models     #
-#=======================#
+# ===== DEMUCS Models ===== #
 DEMUCS_MODELS = {
     'htdemucs': 'htdemucs.yaml',
     'htdemucs_6s': 'htdemucs_6s.yaml',
