@@ -103,6 +103,6 @@
         },
         "Roformer Model: MelBand Roformer Kim | Big SYHFT V1 by SYH99999": {
             "MelBandRoformerBigSYHFTV1.ckpt": "config_vocals_mel_band_roformer_big_v1_ft.yaml"
-        },
+        }
     }
 }
