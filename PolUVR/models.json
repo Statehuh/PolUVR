@@ -56,6 +56,9 @@
         "Roformer Model: MelBand Roformer | De-Reverb by anvuew": {
             "dereverb_mel_band_roformer_anvuew_sdr_19.1729.ckpt": "dereverb_mel_band_roformer_anvuew.yaml"
         },
+        "Roformer Model: MelBand Roformer | De-Reverb Mono by anvuew": {
+            "dereverb_mel_band_roformer_mono_anvuew_sdr_20.4029.ckpt": "dereverb_mel_band_roformer_anvuew.yaml"
+        },
         "Roformer Model: MelBand Roformer | De-Reverb Less Aggressive by anvuew": {
             "dereverb_mel_band_roformer_less_aggressive_anvuew_sdr_18.8050.ckpt": "dereverb_mel_band_roformer_anvuew.yaml"
         },

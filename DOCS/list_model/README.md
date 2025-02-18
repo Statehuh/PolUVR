@@ -1,0 +1,161 @@
+# User Friendly Model Name | Model File Name
+
+---
+
+## Roformer Models
+
+### BandSplit Roformer
+
+| User Friendly Model Name                    | Model File Name                                    |
+|---------------------------------------------|----------------------------------------------------|
+| BS-Roformer-Viperx-1053                     | `model_bs_roformer_ep_937_sdr_10.5309.ckpt`        |
+| BS-Roformer-Viperx-1296                     | `model_bs_roformer_ep_368_sdr_12.9628.ckpt`        |
+| BS-Roformer-Viperx-1297                     | `model_bs_roformer_ep_317_sdr_12.9755.ckpt`        |
+| BS-Roformer-De-Reverb                       | `deverb_bs_roformer_8_384dim_10depth.ckpt`         |
+| BS Roformer \| Chorus Male-Female by Sucial | `model_chorus_bs_roformer_ep_267_sdr_24.1275.ckpt` |
+
+### MelBand Roformer
+
+| User Friendly Model Name                                 | Model File Name                                                      |
+|----------------------------------------------------------|----------------------------------------------------------------------|
+| Mel-Roformer-Crowd-Aufr33-Viperx                         | `mel_band_roformer_crowd_aufr33_viperx_sdr_8.7144.ckpt`              |
+| Mel-Roformer-Karaoke-Aufr33-Viperx                       | `mel_band_roformer_karaoke_aufr33_viperx_sdr_10.1956.ckpt`           |
+| Mel-Roformer-Viperx-1143                                 | `model_mel_band_roformer_ep_3005_sdr_11.4360.ckpt`                   |
+| Mel-Roformer-Denoise-Aufr33                              | `denoise_mel_band_roformer_aufr33_sdr_27.9959.ckpt`                  |
+| Mel-Roformer-Denoise-Aufr33-Aggr                         | `denoise_mel_band_roformer_aufr33_aggr_sdr_27.9768.ckpt`             |
+| MelBand Roformer \| Aspiration by Sucial                 | `aspiration_mel_band_roformer_sdr_18.9845.ckpt`                      |
+| MelBand Roformer \| Aspiration Less Aggressive by Sucial | `aspiration_mel_band_roformer_less_aggr_sdr_18.1201.ckpt`            |
+| MelBand Roformer \| De-Reverb by anvuew                  | `dereverb_mel_band_roformer_anvuew_sdr_19.1729.ckpt`                 |
+| MelBand Roformer \| De-Reverb Less Aggressive by anvuew  | `dereverb_mel_band_roformer_less_aggressive_anvuew_sdr_18.8050.ckpt` |
+| MelBand Roformer \| De-Reverb Big by Sucial              | `dereverb_big_mbr_ep_362.ckpt`                                       |
+| MelBand Roformer \| De-Reverb Super Big by Sucial        | `dereverb_super_big_mbr_ep_346.ckpt`                                 |
+| MelBand Roformer \| De-Reverb-Echo by Sucial             | `dereverb-echo_mel_band_roformer_sdr_10.0169.ckpt`                   |
+| MelBand Roformer \| De-Reverb-Echo V2 by Sucial          | `dereverb-echo_mel_band_roformer_sdr_13.4843_v2.ckpt`                |
+| MelBand Roformer \| De-Reverb-Echo Fused by Sucial       | `dereverb_echo_mbr_fused.ckpt`                                       |
+| MelBand Roformer \| Vocals by Kimberley Jensen           | `vocals_mel_band_roformer.ckpt`                                      |
+| MelBand Roformer \| Vocals by becruily                   | `mel_band_roformer_vocals_becruily.ckpt`                             |
+| MelBand Roformer \| Instrumental by becruily             | `mel_band_roformer_instrumental_becruily.ckpt`                       |
+| MelBand Roformer \| Bleed Suppressor V1 by unwa-97chris  | `mel_band_roformer_bleed_suppressor_v1.ckpt`                         |
+
+### MelBand Roformer Kim
+
+| User Friendly Model Name                           | Model File Name                                 |
+|----------------------------------------------------|-------------------------------------------------|
+| MelBand Roformer Kim \| FT by unwa                 | `mel_band_roformer_kim_ft_unwa.ckpt`            |
+| MelBand Roformer Kim \| FT 2 by unwa               | `mel_band_roformer_kim_ft2_unwa.ckpt`           |
+| MelBand Roformer Kim \| FT 2 Bleedless by unwa     | `mel_band_roformer_kim_ft2_bleedless_unwa.ckpt` |
+| MelBand Roformer Kim \| Big Beta 4 FT by unwa      | `melband_roformer_big_beta4.ckpt`               |
+| MelBand Roformer Kim \| Big Beta 5e FT by unwa     | `melband_roformer_big_beta5e.ckpt`              |
+| MelBand Roformer Kim \| Inst V1 by Unwa            | `melband_roformer_inst_v1.ckpt`                 |
+| MelBand Roformer Kim \| Inst V1 (E) by Unwa        | `melband_roformer_inst_v1e.ckpt`                |
+| MelBand Roformer Kim \| Inst V2 by Unwa            | `melband_roformer_inst_v2.ckpt`                 |
+| MelBand Roformer Kim \| InstVoc Duality V1 by Unwa | `melband_roformer_instvoc_duality_v1.ckpt`      |
+| MelBand Roformer Kim \| InstVoc Duality V2 by Unwa | `melband_roformer_instvox_duality_v2.ckpt`      |
+| MelBand Roformer Kim \| SYHFT by SYH99999          | `MelBandRoformerSYHFT.ckpt`                     |
+| MelBand Roformer Kim \| SYHFT V2 by SYH99999       | `MelBandRoformerSYHFTV2.ckpt`                   |
+| MelBand Roformer Kim \| SYHFT V2.5 by SYH99999     | `MelBandRoformerSYHFTV2.5.ckpt`                 |
+| MelBand Roformer Kim \| SYHFT V3 by SYH99999       | `MelBandRoformerSYHFTV3Epsilon.ckpt`            |
+| MelBand Roformer Kim \| Big SYHFT V1 by SYH99999   | `MelBandRoformerBigSYHFTV1.ckpt`                |
+
+---
+
+## MDX23C Models
+
+| User Friendly Model Name            | Model File Name                         |
+|-------------------------------------|-----------------------------------------|
+| MDX23C DrumSep by aufr33-jarredou   | `MDX23C-DrumSep-aufr33-jarredou.ckpt`   |
+| MDX23C De-Reverb by aufr33-jarredou | `MDX23C-De-Reverb-aufr33-jarredou.ckpt` |
+| MDX23C-InstVoc HQ                   | `MDX23C-8KFFT-InstVoc_HQ.ckpt`          |
+| VIP \| MDX23C-InstVoc HQ 2          | `MDX23C-8KFFT-InstVoc_HQ_2.ckpt`        |
+| VIP \| MDX23C_D1581                 | `MDX23C_D1581.ckpt`                     |
+
+---
+
+## MDXN-NET Models
+
+| User Friendly Model Name         | Model File Name                  |
+|----------------------------------|----------------------------------|
+| UVR-MDX-NET 1                    | `UVR_MDXNET_1_9703.onnx`         |
+| UVR-MDX-NET 2                    | `UVR_MDXNET_2_9682.onnx`         |
+| UVR-MDX-NET 3                    | `UVR_MDXNET_3_9662.onnx`         |
+| UVR_MDXNET_9482                  | `UVR_MDXNET_9482.onnx`           |
+| UVR-MDX-NET Inst 1               | `UVR-MDX-NET-Inst_1.onnx`        |
+| UVR-MDX-NET Inst 2               | `UVR-MDX-NET-Inst_2.onnx`        |
+| UVR-MDX-NET Inst 3               | `UVR-MDX-NET-Inst_3.onnx`        |
+| UVR-MDX-NET Inst HQ 1            | `UVR-MDX-NET-Inst_HQ_1.onnx`     |
+| UVR-MDX-NET Inst HQ 2            | `UVR-MDX-NET-Inst_HQ_2.onnx`     |
+| UVR-MDX-NET Inst HQ 3            | `UVR-MDX-NET-Inst_HQ_3.onnx`     |
+| UVR-MDX-NET Inst HQ 4            | `UVR-MDX-NET-Inst_HQ_4.onnx`     |
+| UVR-MDX-NET Inst HQ 5            | `UVR-MDX-NET-Inst_HQ_5.onnx`     |
+| UVR-MDX-NET Inst Main            | `UVR-MDX-NET-Inst_Main.onnx`     |
+| UVR-MDX-NET Karaoke              | `UVR_MDXNET_KARA.onnx`           |
+| UVR-MDX-NET Karaoke 2            | `UVR_MDXNET_KARA_2.onnx`         |
+| UVR-MDX-NET Main                 | `UVR_MDXNET_Main.onnx`           |
+| UVR-MDX-NET Voc FT               | `UVR-MDX-NET-Voc_FT.onnx`        |
+| Kim Inst                         | `Kim_Inst.onnx`                  |
+| Kim Vocal 1                      | `Kim_Vocal_1.onnx`               |
+| Kim Vocal 2                      | `Kim_Vocal_2.onnx`               |
+| kuielab_a_bass                   | `kuielab_a_bass.onnx`            |
+| kuielab_a_drums                  | `kuielab_a_drums.onnx`           |
+| kuielab_a_other                  | `kuielab_a_other.onnx`           |
+| kuielab_a_vocals                 | `kuielab_a_vocals.onnx`          |
+| kuielab_b_bass                   | `kuielab_b_bass.onnx`            |
+| kuielab_b_drums                  | `kuielab_b_drums.onnx`           |
+| kuielab_b_other                  | `kuielab_b_other.onnx`           |
+| kuielab_b_vocals                 | `kuielab_b_vocals.onnx`          |
+| Reverb HQ By FoxJoy              | `Reverb_HQ_By_FoxJoy.onnx`       |
+| VIP \| UVR-MDX-NET_Inst_82_beta  | `UVR-MDX-NET_Inst_82_beta.onnx`  |
+| VIP \| UVR-MDX-NET_Inst_90_beta  | `UVR-MDX-NET_Inst_90_beta.onnx`  |
+| VIP \| UVR-MDX-NET_Inst_187_beta | `UVR-MDX-NET_Inst_187_beta.onnx` |
+| VIP \| UVR-MDX-NET-Inst_full_292 | `UVR-MDX-NET-Inst_full_292.onnx` |
+| VIP \| UVR-MDX-NET_Main_340      | `UVR-MDX-NET_Main_340.onnx`      |
+| VIP \| UVR-MDX-NET_Main_390      | `UVR-MDX-NET_Main_390.onnx`      |
+| VIP \| UVR-MDX-NET_Main_406      | `UVR-MDX-NET_Main_406.onnx`      |
+| VIP \| UVR-MDX-NET_Main_427      | `UVR-MDX-NET_Main_427.onnx`      |
+| VIP \| UVR-MDX-NET_Main_438      | `UVR-MDX-NET_Main_438.onnx`      |
+
+---
+
+## VR-ARCH Models
+
+| User Friendly Model Name         | Model File Name                     |
+|----------------------------------|-------------------------------------|
+| 1_HP-UVR                         | `1_HP-UVR.pth`                      |
+| 2_HP-UVR                         | `2_HP-UVR.pth`                      |
+| 3_HP-Vocal-UVR                   | `3_HP-Vocal-UVR.pth`                |
+| 4_HP-Vocal-UVR                   | `4_HP-Vocal-UVR.pth`                |
+| 5_HP-Karaoke-UVR                 | `5_HP-Karaoke-UVR.pth`              |
+| 6_HP-Karaoke-UVR                 | `6_HP-Karaoke-UVR.pth`              |
+| 7_HP2-UVR                        | `7_HP2-UVR.pth`                     |
+| 8_HP2-UVR                        | `8_HP2-UVR.pth`                     |
+| 9_HP2-UVR                        | `9_HP2-UVR.pth`                     |
+| 10_SP-UVR-2B-32000-1             | `10_SP-UVR-2B-32000-1.pth`          |
+| 11_SP-UVR-2B-32000-2             | `11_SP-UVR-2B-32000-2.pth`          |
+| 12_SP-UVR-3B-44100               | `12_SP-UVR-3B-44100.pth`            |
+| 13_SP-UVR-4B-44100-1             | `13_SP-UVR-4B-44100-1.pth`          |
+| 14_SP-UVR-4B-44100-2             | `14_SP-UVR-4B-44100-2.pth`          |
+| 15_SP-UVR-MID-44100-1            | `15_SP-UVR-MID-44100-1.pth`         |
+| 16_SP-UVR-MID-44100-2            | `16_SP-UVR-MID-44100-2.pth`         |
+| 17_HP-Wind_Inst-UVR              | `17_HP-Wind_Inst-UVR.pth`           |
+| MGM_HIGHEND_v4                   | `MGM_HIGHEND_v4.pth`                |
+| MGM_LOWEND_A_v4                  | `MGM_LOWEND_A_v4.pth`               |
+| MGM_LOWEND_B_v4                  | `MGM_LOWEND_B_v4.pth`               |
+| MGM_MAIN_v4                      | `MGM_MAIN_v4.pth`                   |
+| UVR-BVE-4B_SN-44100-1            | `UVR-BVE-4B_SN-44100-1.pth`         |
+| UVR-De-Reverb by aufr33-jarredou | `UVR-De-Reverb-aufr33-jarredou.pth` |
+| UVR-De-Echo-Aggressive by FoxJoy | `UVR-De-Echo-Aggressive.pth`        |
+| UVR-De-Echo-Normal by FoxJoy     | `UVR-De-Echo-Normal.pth`            |
+| UVR-DeEcho-DeReverb by FoxJoy    | `UVR-DeEcho-DeReverb.pth`           |
+| UVR-DeNoise-Lite by FoxJoy       | `UVR-DeNoise-Lite.pth`              |
+| UVR-DeNoise by FoxJoy            | `UVR-DeNoise.pth`                   |
+
+---
+
+## DEMUCS Models
+
+| User Friendly Model Name | Model File Name    |
+|--------------------------|--------------------|
+| htdemucs                 | `htdemucs.yaml`    |
+| htdemucs_6s              | `htdemucs_6s.yaml` |
+| htdemucs_ft              | `htdemucs_ft.yaml` |
+| hdemucs_mmi              | `hdemucs_mmi.yaml` |
