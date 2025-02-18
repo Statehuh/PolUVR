@@ -14,12 +14,15 @@ use_autocast = device == "cuda"
 
 # ===== Roformer Models ===== #
 ROFORMER_MODELS = {
-    # BS Roformer
+    # BandSplit Roformer
     'BS-Roformer-Viperx-1053': 'model_bs_roformer_ep_937_sdr_10.5309.ckpt',
     'BS-Roformer-Viperx-1296': 'model_bs_roformer_ep_368_sdr_12.9628.ckpt',
     'BS-Roformer-Viperx-1297': 'model_bs_roformer_ep_317_sdr_12.9755.ckpt',
     'BS-Roformer-De-Reverb': 'deverb_bs_roformer_8_384dim_10depth.ckpt',
     'BS Roformer | Chorus Male-Female by Sucial': 'model_chorus_bs_roformer_ep_267_sdr_24.1275.ckpt',
+
+    # BandSplit Roformer Gabox
+    'BS Roformer | Vocals by Gabox':'bs_roformer_voc_gabox.ckpt',
 
     # MelBand Roformer
     'Mel-Roformer-Crowd-Aufr33-Viperx': 'mel_band_roformer_crowd_aufr33_viperx_sdr_8.7144.ckpt',
@@ -41,6 +44,28 @@ ROFORMER_MODELS = {
     'MelBand Roformer | Vocals by becruily': 'mel_band_roformer_vocals_becruily.ckpt',
     'MelBand Roformer | Instrumental by becruily': 'mel_band_roformer_instrumental_becruily.ckpt',
     'MelBand Roformer | Bleed Suppressor V1 by unwa-97chris': 'mel_band_roformer_bleed_suppressor_v1.ckpt',
+
+    # MelBand Roformer Gabox
+    'MelBand Roformer | Instrumental by Gabox':'mel_band_roformer_instrumental_gabox.ckpt',
+    'MelBand Roformer | Instrumental v1 by Gabox':'mel_band_roformer_inst_v1_gabox.ckpt',
+    'MelBand Roformer | Instrumental v2 by Gabox':'mel_band_roformer_inst_v2_gabox.ckpt',
+    'MelBand Roformer | Instrumental v3 by Gabox':'mel_band_roformer_inst_v3_gabox.ckpt',
+    'MelBand Roformer | Instrumental Bleedless v1 by Gabox':'mel_band_roformer_inst_bleedless_v1_gabox.ckpt',
+    'MelBand Roformer | Instrumental Bleedless v2 by Gabox':'mel_band_roformer_inst_bleedless_v2_gabox.ckpt',
+    'MelBand Roformer | Instrumental Fullness v1 by Gabox':'mel_band_roformer_inst_fullness_v1_gabox.ckpt',
+    'MelBand Roformer | Instrumental Fullness v2 by Gabox':'mel_band_roformer_inst_fullness_v2_gabox.ckpt',
+    'MelBand Roformer | Instrumental Fullness v3 by Gabox':'mel_band_roformer_inst_fullness_v3_gabox.ckpt',
+    'MelBand Roformer | Instrumental Fullness v4 Noise by Gabox':'mel_band_roformer_inst_fullness_v4_noise_gabox.ckpt',
+    'MelBand Roformer | Instrumental Fullness v5 by Gabox':'mel_band_roformer_inst_fullness_v5_gabox.ckpt',
+    'MelBand Roformer | Instrumental Fullness v5 Noise by Gabox':'mel_band_roformer_inst_fullness_v5_noise_gabox.ckpt',
+    'MelBand Roformer | Instrumental Fullness v6 by Gabox':'mel_band_roformer_inst_fullness_v6_gabox.ckpt',
+    'MelBand Roformer | Instrumental Fullness v6 Noise by Gabox':'mel_band_roformer_inst_fullness_v6_noise_gabox.ckpt',
+    'MelBand Roformer | Instrumental DeNoise-DeBleed by Gabox':'mel_band_roformer_inst_denoise_debleed_gabox.ckpt',
+    'MelBand Roformer | Vocals by Gabox':'mel_band_roformer_voc_gabox.ckpt',
+    'MelBand Roformer | Vocals Fullness v1 by Gabox':'mel_band_roformer_voc_fullness_v1_gabox.ckpt',
+    'MelBand Roformer | Vocals Fullness v2 by Gabox':'mel_band_roformer_voc_fullness_v2_gabox.ckpt',
+    'MelBand Roformer | Vocals Fullness v3 by Gabox':'mel_band_roformer_voc_fullness_v3_gabox.ckpt',
+    'MelBand Roformer | Vocals Fullness v4 by Gabox':'mel_band_roformer_voc_fullness_v4_gabox.ckpt',
 
     # MelBand Roformer Kim
     'MelBand Roformer Kim | FT by unwa': 'mel_band_roformer_kim_ft_unwa.ckpt',
