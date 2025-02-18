@@ -484,6 +484,7 @@ class Separator:
         public_model_repo_url_prefix = "https://github.com/TRvlvr/model_repo/releases/download/all_public_uvr_models"
         vip_model_repo_url_prefix = "https://github.com/Anjok0109/ai_magic/releases/download/v5"
         PolUVR_models_repo_url_prefix = "https://github.com/Bebra777228/PolUVR/releases/download/model-configs"
+        PolUVR_test_models_repo_url_prefix = "https://github.com/Bebra777228/PolUVR/releases/download/test-model-configs"
 
         yaml_config_filename = None
 
@@ -493,50 +494,58 @@ class Separator:
         for model_type, models in supported_model_files_grouped.items():
             # Iterate through each model in this type
             for model_friendly_name, model_info in models.items():
-                self.model_is_uvr_vip = "VIP" in model_friendly_name
-                model_repo_url_prefix = vip_model_repo_url_prefix if self.model_is_uvr_vip else public_model_repo_url_prefix
-
                 # Check if this model matches our target filename
                 if model_info["filename"] == model_filename or model_filename in model_info["download_files"]:
                     self.logger.debug(f"Found matching model: {model_friendly_name}")
                     self.model_friendly_name = model_friendly_name
                     self.print_uvr_vip_message()
 
+                    model_repo_url_prefix = (
+                        vip_model_repo_url_prefix if "VIP" in model_friendly_name else public_model_repo_url_prefix
+                    )
+
                     # Download each required file for this model
                     for file_to_download in model_info["download_files"]:
-                        # For URLs, extract just the filename portion
-                        if file_to_download.startswith("http"):
-                            filename = file_to_download.split("/")[-1]
-                            download_path = os.path.join(self.model_file_dir, filename)
-                            self.download_file_if_not_exists(file_to_download, download_path)
-                            continue
-
-                        download_path = os.path.join(self.model_file_dir, file_to_download)
+                        filename = file_to_download.split("/")[-1] if file_to_download.startswith("http") else file_to_download
+                        download_path = os.path.join(self.model_file_dir, filename)
 
                         # For MDXC models, handle YAML config files specially
                         if model_type == "MDXC" and file_to_download.endswith(".yaml"):
-                            yaml_config_filename = file_to_download
-                            try:
-                                yaml_url = f"{model_repo_url_prefix}/mdx_model_data/mdx_c_configs/{file_to_download}"
-                                self.download_file_if_not_exists(yaml_url, download_path)
-                            except RuntimeError:
-                                self.logger.debug("YAML config not found in UVR repo, trying PolUVR models repo...")
-                                yaml_url = f"{PolUVR_models_repo_url_prefix}/{file_to_download}"
-                                self.download_file_if_not_exists(yaml_url, download_path)
-                            continue
-
-                        # For regular model files, try UVR repo first, then PolUVR repo
-                        try:
-                            download_url = f"{model_repo_url_prefix}/{file_to_download}"
-                            self.download_file_if_not_exists(download_url, download_path)
-                        except RuntimeError:
-                            self.logger.debug("Model not found in UVR repo, trying PolUVR models repo...")
-                            download_url = f"{PolUVR_models_repo_url_prefix}/{file_to_download}"
-                            self.download_file_if_not_exists(download_url, download_path)
+                            yaml_config_filename = filename
+                            self._download_file_with_fallbacks(
+                                [
+                                    f"{model_repo_url_prefix}/mdx_model_data/mdx_c_configs/{filename}",
+                                    f"{PolUVR_models_repo_url_prefix}/{filename}",
+                                    f"{PolUVR_test_models_repo_url_prefix}/{filename}",
+                                ],
+                                download_path,
+                            )
+                        else:
+                            self._download_file_with_fallbacks(
+                                [
+                                    f"{model_repo_url_prefix}/{filename}",
+                                    f"{PolUVR_models_repo_url_prefix}/{filename}",
+                                    f"{PolUVR_test_models_repo_url_prefix}/{filename}",
+                                ],
+                                download_path,
+                            )
 
                     return model_filename, model_type, model_friendly_name, model_path, yaml_config_filename
 
         raise ValueError(f"Model file {model_filename} not found in supported model files")
+
+    def _download_file_with_fallbacks(self, urls, download_path):
+        """
+        Attempts to download a file from a list of URLs, trying each one in sequence.
+        Raises RuntimeError if all attempts fail.
+        """
+        for url in urls:
+            try:
+                self.download_file_if_not_exists(url, download_path)
+                return
+            except RuntimeError as e:
+                self.logger.debug(f"Failed to download from {url}: {e}")
+        raise RuntimeError(f"Failed to download file from all provided URLs: {urls}")
 
     def load_model_data_from_yaml(self, yaml_config_filename):
         """
