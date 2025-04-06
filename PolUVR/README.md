@@ -6,92 +6,102 @@
 
 ### BandSplit Roformer
 
-| User Friendly Model Name                    | Model File Name                                    |
-|---------------------------------------------|----------------------------------------------------|
-| BS-Roformer-Viperx-1053                     | `model_bs_roformer_ep_937_sdr_10.5309.ckpt`        |
-| BS-Roformer-Viperx-1296                     | `model_bs_roformer_ep_368_sdr_12.9628.ckpt`        |
-| BS-Roformer-Viperx-1297                     | `model_bs_roformer_ep_317_sdr_12.9755.ckpt`        |
-| BS-Roformer-De-Reverb                       | `deverb_bs_roformer_8_384dim_10depth.ckpt`         |
-| BS Roformer \| Chorus Male-Female by Sucial | `model_chorus_bs_roformer_ep_267_sdr_24.1275.ckpt` |
-| BS Roformer \| Vocals by Gabox              | `bs_roformer_voc_gabox.ckpt`                       |
+| User Friendly Model Name                    			| Model File Name                                     |
+|-------------------------------------------------------|-----------------------------------------------------|
+| BandSplit Roformer \| SDR 1053 by Viperx              | `model_bs_roformer_ep_937_sdr_10.5309.ckpt`         |
+| BandSplit Roformer \| SDR 1296 by Viperx              | `model_bs_roformer_ep_368_sdr_12.9628.ckpt`         |
+| BandSplit Roformer \| SDR 1297 by Viperx              | `model_bs_roformer_ep_317_sdr_12.9755.ckpt`         |
+| BandSplit Roformer \| Chorus Male-Female by Sucial    | `model_chorus_bs_roformer_ep_267_sdr_24.1275.ckpt`  |
+| BandSplit Roformer \| Male-Female by aufr33 			| `bs_roformer_male_female_by_aufr33_sdr_7.2889.ckpt` |
+| BandSplit Roformer \| Dereverb by anvuew              | `deverb_bs_roformer_8_384dim_10depth.ckpt`          |
+| BandSplit Roformer \| Inst-EXP-Value-Residual by Unwa | `BS_Inst_EXP_VRL.ckpt`                              |
+| BandSplit Roformer \| Vocals by Gabox              	| `bs_roformer_voc_gabox.ckpt`                        |
 
 ### MelBand Roformer
 
 | User Friendly Model Name                                    | Model File Name                                                      |
 |-------------------------------------------------------------|----------------------------------------------------------------------|
-| Mel-Roformer-Crowd-Aufr33-Viperx                            | `mel_band_roformer_crowd_aufr33_viperx_sdr_8.7144.ckpt`              |
-| Mel-Roformer-Karaoke-Aufr33-Viperx                          | `mel_band_roformer_karaoke_aufr33_viperx_sdr_10.1956.ckpt`           |
-| Mel-Roformer-Viperx-1143                                    | `model_mel_band_roformer_ep_3005_sdr_11.4360.ckpt`                   |
-| Mel-Roformer-Denoise-Aufr33                                 | `denoise_mel_band_roformer_aufr33_sdr_27.9959.ckpt`                  |
-| Mel-Roformer-Denoise-Aufr33-Aggr                            | `denoise_mel_band_roformer_aufr33_aggr_sdr_27.9768.ckpt`             |
-| MelBand Roformer \| Aspiration by Sucial                    | `aspiration_mel_band_roformer_sdr_18.9845.ckpt`                      |
-| MelBand Roformer \| Aspiration Less Aggressive by Sucial    | `aspiration_mel_band_roformer_less_aggr_sdr_18.1201.ckpt`            |
-| MelBand Roformer \| De-Reverb by anvuew                     | `dereverb_mel_band_roformer_anvuew_sdr_19.1729.ckpt`                 |
-| MelBand Roformer \| De-Reverb Mono by anvuew                | `dereverb_mel_band_roformer_mono_anvuew_sdr_20.4029.ckpt`            |
-| MelBand Roformer \| De-Reverb Less Aggressive by anvuew     | `dereverb_mel_band_roformer_less_aggressive_anvuew_sdr_18.8050.ckpt` |
-| MelBand Roformer \| De-Reverb Big by Sucial                 | `dereverb_big_mbr_ep_362.ckpt`                                       |
-| MelBand Roformer \| De-Reverb Super Big by Sucial           | `dereverb_super_big_mbr_ep_346.ckpt`                                 |
-| MelBand Roformer \| De-Reverb-Echo by Sucial                | `dereverb-echo_mel_band_roformer_sdr_10.0169.ckpt`                   |
-| MelBand Roformer \| De-Reverb-Echo V2 by Sucial             | `dereverb-echo_mel_band_roformer_sdr_13.4843_v2.ckpt`                |
-| MelBand Roformer \| De-Reverb-Echo Fused by Sucial          | `dereverb_echo_mbr_fused.ckpt`                                       |
-| MelBand Roformer \| Vocals by Kimberley Jensen              | `vocals_mel_band_roformer.ckpt`                                      |
-| MelBand Roformer \| Vocals by becruily                      | `mel_band_roformer_vocals_becruily.ckpt`                             |
-| MelBand Roformer \| Instrumental by becruily                | `mel_band_roformer_instrumental_becruily.ckpt`                       |
-| MelBand Roformer \| Bleed Suppressor V1 by unwa-97chris     | `mel_band_roformer_bleed_suppressor_v1.ckpt`                         |
-| MelBand Roformer \| Instrumental by Gabox                   |  `mel_band_roformer_instrumental_gabox.ckpt`                         |
-| MelBand Roformer \| Instrumental by Gabox                   | `mel_band_roformer_instrumental_gabox.ckpt`                          |
-| MelBand Roformer \| Instrumental v1 by Gabox                | `mel_band_roformer_inst_v1_gabox.ckpt`                               |
-| MelBand Roformer \| Instrumental v2 by Gabox                | `mel_band_roformer_inst_v2_gabox.ckpt`                               |
-| MelBand Roformer \| Instrumental v3 by Gabox                | `mel_band_roformer_inst_v3_gabox.ckpt`                               |
-| MelBand Roformer \| Instrumental Bleedless v1 by Gabox      | `mel_band_roformer_inst_bleedless_v1_gabox.ckpt`                     |
-| MelBand Roformer \| Instrumental Bleedless v2 by Gabox      | `mel_band_roformer_inst_bleedless_v2_gabox.ckpt`                     |
-| MelBand Roformer \| Instrumental Fullness v1 by Gabox       | `mel_band_roformer_inst_fullness_v1_gabox.ckpt`                      |
-| MelBand Roformer \| Instrumental Fullness v2 by Gabox       | `mel_band_roformer_inst_fullness_v2_gabox.ckpt`                      |
-| MelBand Roformer \| Instrumental Fullness v3 by Gabox       | `mel_band_roformer_inst_fullness_v3_gabox.ckpt`                      |
-| MelBand Roformer \| Instrumental Fullness v4 Noise by Gabox | `mel_band_roformer_inst_fullness_v4_noise_gabox.ckpt`                |
-| MelBand Roformer \| Instrumental Fullness v5 by Gabox       | `mel_band_roformer_inst_fullness_v5_gabox.ckpt`                      |
-| MelBand Roformer \| Instrumental Fullness v5 Noise by Gabox | `mel_band_roformer_inst_fullness_v5_noise_gabox.ckpt`                |
-| MelBand Roformer \| Instrumental Fullness v6 by Gabox       | `mel_band_roformer_inst_fullness_v6_gabox.ckpt`                      |
-| MelBand Roformer \| Instrumental Fullness v6 Noise by Gabox | `mel_band_roformer_inst_fullness_v6_noise_gabox.ckpt`                |
-| MelBand Roformer \| Instrumental DeNoise-DeBleed by Gabox   | `mel_band_roformer_inst_denoise_debleed_gabox.ckpt`                  |
-| MelBand Roformer \| Vocals by Gabox                         | `mel_band_roformer_voc_gabox.ckpt`                                   |
-| MelBand Roformer \| Vocals Fullness v1 by Gabox             | `mel_band_roformer_voc_fullness_v1_gabox.ckpt`                       |
-| MelBand Roformer \| Vocals Fullness v2 by Gabox             | `mel_band_roformer_voc_fullness_v2_gabox.ckpt`                       |
-| MelBand Roformer \| Vocals Fullness v3 by Gabox             | `mel_band_roformer_voc_fullness_v3_gabox.ckpt`                       |
-| MelBand Roformer \| Vocals Fullness v4 by Gabox             | `mel_band_roformer_voc_fullness_v4_gabox.ckpt`                       |
+| MelBand Roformer \| SDR 1143 by Viperx					  | `model_mel_band_roformer_ep_3005_sdr_11.4360.ckpt`					 |
+| MelBand Roformer \| Aspiration by Sucial					  | `aspiration_mel_band_roformer_sdr_18.9845.ckpt`						 |
+| MelBand Roformer \| Aspiration Less Aggressive by Sucial    | `aspiration_mel_band_roformer_less_aggr_sdr_18.1201.ckpt`			 |
+| MelBand Roformer \| Bleed Suppressor v1 by Unwa & 97chris   | `mel_band_roformer_bleed_suppressor_v1.ckpt`						 |
+| MelBand Roformer \| Crowd by Aufr33 & Viperx				  | `mel_band_roformer_crowd_aufr33_viperx_sdr_8.7144.ckpt`				 |
+| MelBand Roformer \| DeReverb by anvuew					  | `dereverb_mel_band_roformer_anvuew_sdr_19.1729.ckpt`				 |
+| MelBand Roformer \| DeReverb Mono by anvuew				  | `dereverb_mel_band_roformer_mono_anvuew_sdr_20.4029.ckpt`			 |
+| MelBand Roformer \| DeReverb Less Aggressive by anvuew	  | `dereverb_mel_band_roformer_less_aggressive_anvuew_sdr_18.8050.ckpt` |
+| MelBand Roformer \| DeReverb Big by Sucial 				  | `dereverb_big_mbr_ep_362.ckpt`										 |
+| MelBand Roformer \| DeReverb Super Big by Sucial			  | `dereverb_super_big_mbr_ep_346.ckpt`								 |
+| MelBand Roformer \| DeReverb-Echo by Sucial				  | `dereverb-echo_mel_band_roformer_sdr_10.0169.ckpt`					 |
+| MelBand Roformer \| DeReverb-Echo v2 by Sucial			  | `dereverb-echo_mel_band_roformer_sdr_13.4843_v2.ckpt` 				 |
+| MelBand Roformer \| DeReverb-Echo Fused by Sucial			  | `dereverb_echo_mbr_fused.ckpt`										 |
+| MelBand Roformer \| Denoise by Aufr33						  | `denoise_mel_band_roformer_aufr33_sdr_27.9959.ckpt`					 |
+| MelBand Roformer \| Denoise Aggr by Aufr33				  | `denoise_mel_band_roformer_aufr33_aggr_sdr_27.9768.ckpt`			 |
+| MelBand Roformer \| Instrumental by becruily 				  | `mel_band_roformer_instrumental_becruily.ckpt`						 |
+| MelBand Roformer \| Instrumental by Gabox 				  | `mel_band_roformer_instrumental_gabox.ckpt`							 |
+| MelBand Roformer \| Instrumental v1 by Gabox				  | `mel_band_roformer_inst_v1_gabox.ckpt`								 |
+| MelBand Roformer \| Instrumental v2 by Gabox 				  | `mel_band_roformer_inst_v2_gabox.ckpt`								 |
+| MelBand Roformer \| Instrumental v3 by Gabox 				  | `mel_band_roformer_inst_v3_gabox.ckpt`								 |
+| MelBand Roformer \| Instrumental Bleedless v1 by Gabox 	  | `mel_band_roformer_inst_bleedless_v1_gabox.ckpt`					 |
+| MelBand Roformer \| Instrumental Bleedless v2 by Gabox 	  | `mel_band_roformer_inst_bleedless_v2_gabox.ckpt`					 |
+| MelBand Roformer \| Instrumental Fullness v1 by Gabox 	  | `mel_band_roformer_inst_fullness_v1_gabox.ckpt`						 |
+| MelBand Roformer \| Instrumental Fullness v2 by Gabox 	  | `mel_band_roformer_inst_fullness_v2_gabox.ckpt`						 |
+| MelBand Roformer \| Instrumental Fullness v3 by Gabox 	  | `mel_band_roformer_inst_fullness_v3_gabox.ckpt`						 |
+| MelBand Roformer \| Instrumental Fullness v4 Noise by Gabox | `mel_band_roformer_inst_fullness_v4_noise_gabox.ckpt`				 |
+| MelBand Roformer \| Instrumental Fullness v5 by Gabox 	  | `mel_band_roformer_inst_fullness_v5_gabox.ckpt`						 |
+| MelBand Roformer \| Instrumental Fullness v5 Noise by Gabox | `mel_band_roformer_inst_fullness_v5_noise_gabox.ckpt`				 |
+| MelBand Roformer \| Instrumental Fullness v6 by Gabox 	  | `mel_band_roformer_inst_fullness_v6_gabox.ckpt`						 |
+| MelBand Roformer \| Instrumental Fullness v6 Noise by Gabox | `mel_band_roformer_inst_fullness_v6_noise_gabox.ckpt`				 |
+| MelBand Roformer \| Instrumental Fullness v7 by Gabox       | `mel_band_roformer_inst_fullness_v7_gabox.ckpt`						 |
+| MelBand Roformer \| Instrumental Fullness v7 Noise by Gabox | `mel_band_roformer_inst_fullness_v7_noise_gabox.ckpt`				 |
+| MelBand Roformer \| Instrumental Fullness v8 by Gabox 	  | `mel_band_roformer_inst_fullness_v8_gabox.ckpt`						 |
+| MelBand Roformer \| Instrumental Fullness vX by Gabox 	  | `mel_band_roformer_inst_fullness_vX_gabox.ckpt`						 |
+| MelBand Roformer \| Instrumental DeNoise-DeBleed by Gabox   | `mel_band_roformer_inst_denoise_debleed_gabox.ckpt`					 |
+| MelBand Roformer \| Karaoke by Aufr33 & Viperx 			  | `mel_band_roformer_karaoke_aufr33_viperx_sdr_10.1956.ckpt`			 |
+| MelBand Roformer \| Karaoke by Gabox 						  | `mel_band_roformer_karaoke_gabox.ckpt`								 |
+| MelBand Roformer \| Vocals by becruily 					  | `mel_band_roformer_vocals_becruily.ckpt`							 |
+| MelBand Roformer \| Vocals by Kimberley Jensen 			  | `vocals_mel_band_roformer.ckpt`										 |
+| MelBand Roformer \| Vocals by Gabox 						  | `mel_band_roformer_voc_gabox.ckpt`									 |
+| MelBand Roformer \| Vocals Fullness by Aname 				  | `mel_band_roformer_vocals_fullness_aname.ckpt`						 |
+| MelBand Roformer \| Vocals Fullness v1 by Gabox 			  | `mel_band_roformer_voc_fullness_v1_gabox.ckpt`						 |
+| MelBand Roformer \| Vocals Fullness v2 by Gabox   		  | `mel_band_roformer_voc_fullness_v2_gabox.ckpt`						 |
+| MelBand Roformer \| Vocals Fullness v3 by Gabox    		  | `mel_band_roformer_voc_fullness_v3_gabox.ckpt`						 |
+| MelBand Roformer \| Vocals Fullness v4 by Gabox 			  | `mel_band_roformer_voc_fullness_v4_gabox.ckpt`						 |
 
-### MelBand Roformer Kim
+### MelBand Roformer Pre-Trained by Kim
 
 | User Friendly Model Name                           | Model File Name                                 |
 |----------------------------------------------------|-------------------------------------------------|
-| MelBand Roformer Kim \| FT by unwa                 | `mel_band_roformer_kim_ft_unwa.ckpt`            |
-| MelBand Roformer Kim \| FT 2 by unwa               | `mel_band_roformer_kim_ft2_unwa.ckpt`           |
-| MelBand Roformer Kim \| FT 2 Bleedless by unwa     | `mel_band_roformer_kim_ft2_bleedless_unwa.ckpt` |
-| MelBand Roformer Kim \| Big Beta 4 FT by unwa      | `melband_roformer_big_beta4.ckpt`               |
-| MelBand Roformer Kim \| Big Beta 5e FT by unwa     | `melband_roformer_big_beta5e.ckpt`              |
-| MelBand Roformer Kim \| Big Beta 6 FT by unwa      | `melband_roformer_big_beta6.ckpt`               |
-| MelBand Roformer Kim \| Inst V1 by Unwa            | `melband_roformer_inst_v1.ckpt`                 |
-| MelBand Roformer Kim \| Inst V1 (E) by Unwa        | `melband_roformer_inst_v1e.ckpt`                |
-| MelBand Roformer Kim \| Inst V2 by Unwa            | `melband_roformer_inst_v2.ckpt`                 |
-| MelBand Roformer Kim \| InstVoc Duality V1 by Unwa | `melband_roformer_instvoc_duality_v1.ckpt`      |
-| MelBand Roformer Kim \| InstVoc Duality V2 by Unwa | `melband_roformer_instvox_duality_v2.ckpt`      |
-| MelBand Roformer Kim \| SYHFT by SYH99999          | `MelBandRoformerSYHFT.ckpt`                     |
-| MelBand Roformer Kim \| SYHFT V2 by SYH99999       | `MelBandRoformerSYHFTV2.ckpt`                   |
-| MelBand Roformer Kim \| SYHFT V2.5 by SYH99999     | `MelBandRoformerSYHFTV2.5.ckpt`                 |
-| MelBand Roformer Kim \| SYHFT V3 by SYH99999       | `MelBandRoformerSYHFTV3Epsilon.ckpt`            |
-| MelBand Roformer Kim \| Big SYHFT V1 by SYH99999   | `MelBandRoformerBigSYHFTV1.ckpt`                |
+| MelBand Roformer Kim \| Inst v1 by Unwa 			 | `melband_roformer_inst_v1.ckpt` 				   |
+| MelBand Roformer Kim \| Inst v1e by Unwa			 | `melband_roformer_inst_v1e.ckpt` 			   |
+| MelBand Roformer Kim \| Inst v1e Plus by Unwa 	 | `melband_roformer_inst_v1e_plus.ckpt` 		   |
+| MelBand Roformer Kim \| Inst v2 by Unwa 			 | `melband_roformer_inst_v2.ckpt` 				   |
+| MelBand Roformer Kim \| InstVoc Duality v1 by Unwa | `melband_roformer_instvoc_duality_v1.ckpt`      |
+| MelBand Roformer Kim \| InstVoc Duality v2 by Unwa | `melband_roformer_instvoc_duality_v2.ckpt`      |
+| MelBand Roformer Kim \| FT by Unwa 				 | `mel_band_roformer_kim_ft_unwa.ckpt` 		   |
+| MelBand Roformer Kim \| FT v2 by Unwa 			 | `mel_band_roformer_kim_ft2_unwa.ckpt` 		   |
+| MelBand Roformer Kim \| FT v2 Bleedless by Unwa 	 | `mel_band_roformer_kim_ft2_bleedless_unwa.ckpt` |
+| MelBand Roformer Kim \| Big Beta v4 FT by Unwa 	 | `melband_roformer_big_beta4.ckpt` 			   |
+| MelBand Roformer Kim \| Big Beta v5e FT by Unwa 	 | `melband_roformer_big_beta5e.ckpt` 			   |
+| MelBand Roformer Kim \| Big Beta v6 FT by Unwa 	 | `melband_roformer_big_beta6.ckpt` 			   |
+| MelBand Roformer Kim \| Big Beta v6x FT by Unwa 	 | `melband_roformer_big_beta6x.ckpt` 			   |
+| MelBand Roformer Kim \| SYHFT by SYH99999 		 | `MelBandRoformerSYHFT.ckpt` 					   |
+| MelBand Roformer Kim \| SYHFT v2 by SYH99999 		 | `MelBandRoformerSYHFTV2.ckpt`				   |
+| MelBand Roformer Kim \| SYHFT v2.5 by SYH99999 	 | `MelBandRoformerSYHFTV2.5.ckpt` 				   |
+| MelBand Roformer Kim \| SYHFT v3 by SYH99999 		 | `MelBandRoformerSYHFTV3Epsilon.ckpt` 		   |
+| MelBand Roformer Kim \| Big SYHFT v1 by SYH99999   | `MelBandRoformerBigSYHFTV1.ckpt`				   |
 
 ---
 
 ## MDX23C Models
 
-| User Friendly Model Name            | Model File Name                         |
-|-------------------------------------|-----------------------------------------|
-| MDX23C DrumSep by aufr33-jarredou   | `MDX23C-DrumSep-aufr33-jarredou.ckpt`   |
-| MDX23C De-Reverb by aufr33-jarredou | `MDX23C-De-Reverb-aufr33-jarredou.ckpt` |
-| MDX23C-InstVoc HQ                   | `MDX23C-8KFFT-InstVoc_HQ.ckpt`          |
-| VIP \| MDX23C-InstVoc HQ 2          | `MDX23C-8KFFT-InstVoc_HQ_2.ckpt`        |
-| VIP \| MDX23C_D1581                 | `MDX23C_D1581.ckpt`                     |
+| User Friendly Model Name             			| Model File Name                            |
+|-----------------------------------------------|--------------------------------------------|
+| MDX23C DeReverb by aufr33 & jarredou 			| `MDX23C-De-Reverb-aufr33-jarredou.ckpt`    |
+| MDX23C DrumSep by aufr33 & jarredou           | `MDX23C-DrumSep-aufr33-jarredou.ckpt` 	 |
+| MDX23C InstVoc HQ                   		    | `MDX23C-8KFFT-InstVoc_HQ.ckpt`             |
+| MDX23C Phantom Centre extraction by wesleyr36 | `model_mdx23c_ep_271_l1_freq_72.2383.ckpt` |
+| VIP \| MDX23C_D1581          					| `MDX23C_D1581.ckpt`        				 |
+| VIP \| MDX23C InstVoc HQ 2               		| `MDX23C-8KFFT-InstVoc_HQ_2.ckpt`			 |
 
 ---
 
@@ -142,36 +152,36 @@
 
 ## VR-ARCH Models
 
-| User Friendly Model Name         | Model File Name                     |
-|----------------------------------|-------------------------------------|
-| 1_HP-UVR                         | `1_HP-UVR.pth`                      |
-| 2_HP-UVR                         | `2_HP-UVR.pth`                      |
-| 3_HP-Vocal-UVR                   | `3_HP-Vocal-UVR.pth`                |
-| 4_HP-Vocal-UVR                   | `4_HP-Vocal-UVR.pth`                |
-| 5_HP-Karaoke-UVR                 | `5_HP-Karaoke-UVR.pth`              |
-| 6_HP-Karaoke-UVR                 | `6_HP-Karaoke-UVR.pth`              |
-| 7_HP2-UVR                        | `7_HP2-UVR.pth`                     |
-| 8_HP2-UVR                        | `8_HP2-UVR.pth`                     |
-| 9_HP2-UVR                        | `9_HP2-UVR.pth`                     |
-| 10_SP-UVR-2B-32000-1             | `10_SP-UVR-2B-32000-1.pth`          |
-| 11_SP-UVR-2B-32000-2             | `11_SP-UVR-2B-32000-2.pth`          |
-| 12_SP-UVR-3B-44100               | `12_SP-UVR-3B-44100.pth`            |
-| 13_SP-UVR-4B-44100-1             | `13_SP-UVR-4B-44100-1.pth`          |
-| 14_SP-UVR-4B-44100-2             | `14_SP-UVR-4B-44100-2.pth`          |
-| 15_SP-UVR-MID-44100-1            | `15_SP-UVR-MID-44100-1.pth`         |
-| 16_SP-UVR-MID-44100-2            | `16_SP-UVR-MID-44100-2.pth`         |
-| 17_HP-Wind_Inst-UVR              | `17_HP-Wind_Inst-UVR.pth`           |
-| MGM_HIGHEND_v4                   | `MGM_HIGHEND_v4.pth`                |
-| MGM_LOWEND_A_v4                  | `MGM_LOWEND_A_v4.pth`               |
-| MGM_LOWEND_B_v4                  | `MGM_LOWEND_B_v4.pth`               |
-| MGM_MAIN_v4                      | `MGM_MAIN_v4.pth`                   |
-| UVR-BVE-4B_SN-44100-1            | `UVR-BVE-4B_SN-44100-1.pth`         |
-| UVR-De-Reverb by aufr33-jarredou | `UVR-De-Reverb-aufr33-jarredou.pth` |
-| UVR-De-Echo-Aggressive by FoxJoy | `UVR-De-Echo-Aggressive.pth`        |
-| UVR-De-Echo-Normal by FoxJoy     | `UVR-De-Echo-Normal.pth`            |
-| UVR-DeEcho-DeReverb by FoxJoy    | `UVR-DeEcho-DeReverb.pth`           |
-| UVR-DeNoise-Lite by FoxJoy       | `UVR-DeNoise-Lite.pth`              |
-| UVR-DeNoise by FoxJoy            | `UVR-DeNoise.pth`                   |
+| User Friendly Model Name          | Model File Name                     |
+|-----------------------------------|-------------------------------------|
+| MGM_HIGHEND_v4                    | `MGM_HIGHEND_v4.pth`                |
+| MGM_LOWEND_A_v4                   | `MGM_LOWEND_A_v4.pth`               |
+| MGM_LOWEND_B_v4                   | `MGM_LOWEND_B_v4.pth`               |
+| MGM_MAIN_v4                       | `MGM_MAIN_v4.pth`                   |
+| 1_HP-UVR                          | `1_HP-UVR.pth`                      |
+| 2_HP-UVR                          | `2_HP-UVR.pth`                      |
+| 3_HP-Vocal-UVR                    | `3_HP-Vocal-UVR.pth`                |
+| 4_HP-Vocal-UVR                    | `4_HP-Vocal-UVR.pth`                |
+| 5_HP-Karaoke-UVR                  | `5_HP-Karaoke-UVR.pth`              |
+| 6_HP-Karaoke-UVR                  | `6_HP-Karaoke-UVR.pth`              |
+| 7_HP2-UVR                         | `7_HP2-UVR.pth`                     |
+| 8_HP2-UVR                         | `8_HP2-UVR.pth`                     |
+| 9_HP2-UVR                         | `9_HP2-UVR.pth`                     |
+| 10_SP-UVR-2B-32000-1              | `10_SP-UVR-2B-32000-1.pth`          |
+| 11_SP-UVR-2B-32000-2              | `11_SP-UVR-2B-32000-2.pth`          |
+| 12_SP-UVR-3B-44100                | `12_SP-UVR-3B-44100.pth`            |
+| 13_SP-UVR-4B-44100-1              | `13_SP-UVR-4B-44100-1.pth`          |
+| 14_SP-UVR-4B-44100-2              | `14_SP-UVR-4B-44100-2.pth`          |
+| 15_SP-UVR-MID-44100-1             | `15_SP-UVR-MID-44100-1.pth`         |
+| 16_SP-UVR-MID-44100-2             | `16_SP-UVR-MID-44100-2.pth`         |
+| 17_HP-Wind_Inst-UVR               | `17_HP-Wind_Inst-UVR.pth`           |
+| UVR-BVE-4B_SN-44100-1             | `UVR-BVE-4B_SN-44100-1.pth`         |
+| UVR-DeEcho-Normal by FoxJoy 		| `UVR-De-Echo-Normal.pth` 			  |
+| UVR-DeEcho-Aggressive by FoxJoy   | `UVR-De-Echo-Aggressive.pth`        |
+| UVR-DeEcho-DeReverb by FoxJoy 	| `UVR-DeEcho-DeReverb.pth`           |
+| UVR-DeNoise-Lite by FoxJoy    	| `UVR-DeNoise-Lite.pth`              |
+| UVR-DeNoise by FoxJoy       		| `UVR-DeNoise.pth`                   |
+| UVR-DeReverb by aufr33 & jarredou | `UVR-De-Reverb-aufr33-jarredou.pth` |
 
 ---
 

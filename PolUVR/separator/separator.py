@@ -375,9 +375,8 @@ class Separator:
         This method lists the supported model files for PolUVR, by fetching the same file UVR uses to list these.
         Also includes model performance scores where available.
         """
-        download_checks_path = os.path.join(self.model_file_dir, "download_checks.json")
-
-        self.download_file_if_not_exists("https://raw.githubusercontent.com/TRvlvr/application_data/main/filelists/download_checks.json", download_checks_path)
+        download_checks_path = os.path.join(self.model_file_dir, "model_list_links.json")
+        self.download_file_if_not_exists("https://raw.githubusercontent.com/Bebra777228/UVR_resources/main/model_list_links.json", download_checks_path)
 
         model_downloads_list = json.load(open(download_checks_path, encoding="utf-8"))
         self.logger.debug(f"UVR model download list loaded")
@@ -393,7 +392,7 @@ class Separator:
             self.logger.warning("Continuing without model scores")
 
         # Only show Demucs v4 models as we've only implemented support for v4
-        filtered_demucs_v4 = {key: value for key, value in model_downloads_list["demucs_download_list"].items() if key.startswith("Demucs v4")}
+        filtered_demucs_v4 = {key: value for key, value in model_downloads_list.get("demucs_download_list", {}).items() if key.startswith("Demucs v4")}
 
         # Modified Demucs handling to use YAML files as identifiers and include download files
         demucs_models = {}
@@ -409,39 +408,31 @@ class Separator:
                     "target_stem": model_score_data.get("target_stem"),
                     "download_files": list(files.values()),  # List of all download URLs/filenames
                 }
-
-        # Load the JSON file using importlib.resources
-        with resources.open_text("PolUVR", "models.json") as f:
-            PolUVR_models_list = json.load(f)
         self.logger.debug(f"PolUVR model list loaded")
 
         # Return object with list of model names
         model_files_grouped_by_type = {
             "VR": {
                 name: {
-                    "filename": filename,
-                    "scores": model_scores.get(filename, {}).get("median_scores", {}),
-                    "stems": model_scores.get(filename, {}).get("stems", []),
-                    "target_stem": model_scores.get(filename, {}).get("target_stem"),
-                    "download_files": [filename],
-                }  # Just the filename for VR models
-                for name, filename in {
-                    **model_downloads_list["vr_download_list"],
-                    **PolUVR_models_list["vr_download_list"],
-                }.items()
+                    "filename": next(iter(files.keys())),
+                    "scores": model_scores.get(next(iter(files.keys())), {}).get("median_scores", {}),
+                    "stems": model_scores.get(next(iter(files.keys())), {}).get("stems", []),
+                    "target_stem": model_scores.get(next(iter(files.keys())), {}).get("target_stem"),
+                    "download_files": list(files.values()),
+                }
+                for name, files in model_downloads_list.get("vr_download_list", {}).items()
             },
             "MDX": {
                 name: {
-                    "filename": filename,
-                    "scores": model_scores.get(filename, {}).get("median_scores", {}),
-                    "stems": model_scores.get(filename, {}).get("stems", []),
-                    "target_stem": model_scores.get(filename, {}).get("target_stem"),
-                    "download_files": [filename],
-                }  # Just the filename for MDX models
-                for name, filename in {
-                    **model_downloads_list["mdx_download_list"],
-                    **model_downloads_list["mdx_download_vip_list"],
-                    **PolUVR_models_list["mdx_download_list"],
+                    "filename": next(iter(files.keys())),
+                    "scores": model_scores.get(next(iter(files.keys())), {}).get("median_scores", {}),
+                    "stems": model_scores.get(next(iter(files.keys())), {}).get("stems", []),
+                    "target_stem": model_scores.get(next(iter(files.keys())), {}).get("target_stem"),
+                    "download_files": list(files.values()),
+                }
+                for name, files in {
+                    **model_downloads_list.get("mdx_download_list", {}),
+                    **model_downloads_list.get("mdx_download_vip_list", {}),
                 }.items()
             },
             "Demucs": demucs_models,
@@ -451,14 +442,12 @@ class Separator:
                     "scores": model_scores.get(next(iter(files.keys())), {}).get("median_scores", {}),
                     "stems": model_scores.get(next(iter(files.keys())), {}).get("stems", []),
                     "target_stem": model_scores.get(next(iter(files.keys())), {}).get("target_stem"),
-                    "download_files": list(files.keys()) + list(files.values()),  # List of both model filenames and config filenames
+                    "download_files": list(files.values()),
                 }
                 for name, files in {
-                    **model_downloads_list["mdx23c_download_list"],
-                    **model_downloads_list["mdx23c_download_vip_list"],
-                    **model_downloads_list["roformer_download_list"],
-                    **PolUVR_models_list["mdx23c_download_list"],
-                    **PolUVR_models_list["roformer_download_list"],
+                    **model_downloads_list.get("mdx23c_download_list", {}),
+                    **model_downloads_list.get("mdx23c_download_vip_list", {}),
+                    **model_downloads_list.get("roformer_download_list", {}),
                 }.items()
             },
         }
@@ -481,71 +470,34 @@ class Separator:
         model_path = os.path.join(self.model_file_dir, f"{model_filename}")
 
         supported_model_files_grouped = self.list_supported_model_files()
-        public_model_repo_url_prefix = "https://github.com/TRvlvr/model_repo/releases/download/all_public_uvr_models"
-        vip_model_repo_url_prefix = "https://github.com/Anjok0109/ai_magic/releases/download/v5"
-        PolUVR_models_repo_url_prefix = "https://github.com/Bebra777228/PolUVR/releases/download/model-configs"
-        PolUVR_test_models_repo_url_prefix = "https://github.com/Bebra777228/PolUVR/releases/download/test-model-configs"
-
         yaml_config_filename = None
 
         self.logger.debug(f"Searching for model_filename {model_filename} in supported_model_files_grouped")
 
-        # Iterate through model types (MDX, Demucs, MDXC)
+        # Iterate through model types (VR, MDX, Demucs, MDXC)
         for model_type, models in supported_model_files_grouped.items():
             # Iterate through each model in this type
             for model_friendly_name, model_info in models.items():
                 # Check if this model matches our target filename
-                if model_info["filename"] == model_filename or model_filename in model_info["download_files"]:
+                if model_filename == model_info["filename"]:
                     self.logger.debug(f"Found matching model: {model_friendly_name}")
                     self.model_friendly_name = model_friendly_name
                     self.print_uvr_vip_message()
 
-                    model_repo_url_prefix = (
-                        vip_model_repo_url_prefix if "VIP" in model_friendly_name else public_model_repo_url_prefix
-                    )
-
                     # Download each required file for this model
-                    for file_to_download in model_info["download_files"]:
-                        filename = file_to_download.split("/")[-1] if file_to_download.startswith("http") else file_to_download
+                    for url in model_info["download_files"]:
+                        filename = url.split("/")[-1]
                         download_path = os.path.join(self.model_file_dir, filename)
 
                         # For MDXC models, handle YAML config files specially
-                        if model_type == "MDXC" and file_to_download.endswith(".yaml"):
+                        if model_type == "MDXC" and url.endswith(".yaml"):
                             yaml_config_filename = filename
-                            self._download_file_with_fallbacks(
-                                [
-                                    f"{model_repo_url_prefix}/mdx_model_data/mdx_c_configs/{filename}",
-                                    f"{PolUVR_models_repo_url_prefix}/{filename}",
-                                    f"{PolUVR_test_models_repo_url_prefix}/{filename}",
-                                ],
-                                download_path,
-                            )
-                        else:
-                            self._download_file_with_fallbacks(
-                                [
-                                    f"{model_repo_url_prefix}/{filename}",
-                                    f"{PolUVR_models_repo_url_prefix}/{filename}",
-                                    f"{PolUVR_test_models_repo_url_prefix}/{filename}",
-                                ],
-                                download_path,
-                            )
+
+                        self.download_file_if_not_exists(url, download_path)
 
                     return model_filename, model_type, model_friendly_name, model_path, yaml_config_filename
 
         raise ValueError(f"Model file {model_filename} not found in supported model files")
-
-    def _download_file_with_fallbacks(self, urls, download_path):
-        """
-        Attempts to download a file from a list of URLs, trying each one in sequence.
-        Raises RuntimeError if all attempts fail.
-        """
-        for url in urls:
-            try:
-                self.download_file_if_not_exists(url, download_path)
-                return
-            except RuntimeError as e:
-                self.logger.debug(f"Failed to download from {url}: {e}")
-        raise RuntimeError(f"Failed to download file from all provided URLs: {urls}")
 
     def load_model_data_from_yaml(self, yaml_config_filename):
         """
@@ -575,10 +527,10 @@ class Separator:
         The correct parameters are identified by calculating the hash of the model file and looking up the hash in the UVR data files.
         """
         # Model data and configuration sources from UVR
-        model_data_url_prefix = "https://raw.githubusercontent.com/TRvlvr/application_data/main"
+        model_data_url_prefix = "https://raw.githubusercontent.com/Bebra777228/UVR_resources/main/model_data"
 
-        vr_model_data_url = f"{model_data_url_prefix}/vr_model_data/model_data_new.json"
-        mdx_model_data_url = f"{model_data_url_prefix}/mdx_model_data/model_data_new.json"
+        vr_model_data_url = f"{model_data_url_prefix}/vr_model_data.json"
+        mdx_model_data_url = f"{model_data_url_prefix}/mdx_model_data.json"
 
         # Calculate hash for the downloaded model
         self.logger.debug("Calculating MD5 hash for model file to identify model parameters from UVR data...")
@@ -598,15 +550,6 @@ class Separator:
         self.logger.debug("Loading MDX and VR model parameters from UVR model data files...")
         vr_model_data_object = json.load(open(vr_model_data_path, encoding="utf-8"))
         mdx_model_data_object = json.load(open(mdx_model_data_path, encoding="utf-8"))
-
-        # Load additional model data from PolUVR
-        self.logger.debug("Loading additional model parameters from PolUVR model data file...")
-        with resources.open_text("PolUVR", "model-data.json") as f:
-            PolUVR_model_data = json.load(f)
-
-        # Merge the model data objects, with PolUVR data taking precedence
-        vr_model_data_object = {**vr_model_data_object, **PolUVR_model_data.get("vr_model_data", {})}
-        mdx_model_data_object = {**mdx_model_data_object, **PolUVR_model_data.get("mdx_model_data", {})}
 
         if model_hash in mdx_model_data_object:
             model_data = mdx_model_data_object[model_hash]
