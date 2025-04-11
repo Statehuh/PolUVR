@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "PolUVR"
-version = "1.6.0"
+version = "1.7.0"
 description = "Easy to use audio stem separation with a UI, using various models from UVR trained primarily by @Anjok07"
 authors = ["Politrees <artyom.0.bebroy@gmail.com>"]
 license = "MIT"
@@ -26,20 +26,22 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
 ]
 
 [tool.poetry.dependencies]
 python = ">=3.10"
 requests = ">=2"
-numpy = ">=1.23,<2"
+numpy = ">=2"
 librosa = ">=0.10"
 samplerate = "0.1.0"
 six = ">=1.16"
-torch = ">=2.3,<2.6"
+torch = ">=2.3"
 tqdm = "*"
 pydub = ">=0.25"
-onnx = ">=1.14"
-onnx2torch = ">=1.5"
+audioop-lts = { version = ">=0.2.1", python = "^3.13" }
+onnx-weekly = { version = "*" }
+onnx2torch-py313 = ">=1.6"
 onnxruntime = { version = ">=1.17", optional = true }
 onnxruntime-gpu = { version = ">=1.17", optional = true }
 julius = ">=0.2"
@@ -63,6 +65,11 @@ gpu = ["onnxruntime-gpu"]
 PolUVR = 'PolUVR.utils.cli:main'
 PolUVR-app = 'PolUVR.utils.app:main'
 PolUVR-ffmpeg = 'tools.install_ffmpeg:main'
+
+[[tool.poetry.source]]
+name = "test"
+url = "https://test.pypi.org/simple/"
+priority = "explicit"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "*"
