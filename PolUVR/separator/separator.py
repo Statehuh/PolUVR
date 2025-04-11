@@ -508,6 +508,9 @@ class Separator:
                 if model_filename == model_info["filename"]:
                     self.logger.debug(f"Found matching model: {model_friendly_name}")
                     self.model_friendly_name = model_friendly_name
+
+                    # Set the VIP flag based on the model name
+                    self.model_is_uvr_vip = "VIP" in model_friendly_name
                     self.print_uvr_vip_message()
 
                     # Download each required file for this model
