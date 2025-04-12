@@ -264,6 +264,17 @@ def show_hide_params(param):
     """Updates the visibility of a parameter based on the checkbox state."""
     return gr.update(visible=param)
 
+def clear_models(model_dir):
+    """Deletes all model files from the specified directory."""
+    try:
+        for filename in os.listdir(model_dir):
+            if filename.endswith((".th", ".pth", ".onnx", ".ckpt", ".json", ".yaml")):
+                file_path = os.path.join(model_dir, filename)
+                os.remove(file_path)
+        return "Models successfully cleared from memory."
+    except Exception as e:
+        return f"Error deleting models: {e}"
+
 def PolUVR_UI(default_model_file_dir="/tmp/PolUVR-models/", default_output_dir="output"):
     with gr.Tab("Roformer"):
         with gr.Group():
@@ -409,9 +420,12 @@ def PolUVR_UI(default_model_file_dir="/tmp/PolUVR-models/", default_output_dir="
             demucs_stem6 = gr.Audio(label="Stem 6", type="filepath", interactive=False)
 
     with gr.Tab("Settings"):
-        with gr.Group():
-            with gr.Row():
+        with gr.Row():
+            with gr.Column(variant="panel"):
                 model_file_dir = gr.Textbox(value=default_model_file_dir, label="Model Directory", info="Specify the path to store model files.", placeholder="models/UVR_models")
+                gr.HTML("""<div style="margin: -10px 0!important; text-align: center">The button below will delete all previously installed models from your device.</div>""")
+                clear_models_button = gr.Button("Remove models from memory", variant="primary")
+            with gr.Column(variant="panel"):
                 output_dir = gr.Textbox(value=default_output_dir, label="Output Directory", info="Specify the path to save output files.", placeholder="output/UVR_output")
 
         with gr.Accordion("Rename Stems", open=False):
@@ -456,6 +470,8 @@ def PolUVR_UI(default_model_file_dir="/tmp/PolUVR-models/", default_output_dir="
     demucs_model.change(update_stems, inputs=[demucs_model], outputs=stem6)
 
     list_button.click(leaderboard, inputs=[list_filter, list_limit], outputs=output_list)
+
+    clear_models_button.click(clear_models, inputs=[model_file_dir])
 
     roformer_button.click(
         roformer_separator,

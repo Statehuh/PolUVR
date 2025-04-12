@@ -9,6 +9,7 @@ import time
 import logging
 import warnings
 import importlib
+import io
 from typing import Optional
 
 import hashlib
@@ -148,14 +149,23 @@ class Separator:
             package_version = self.get_package_distribution("PolUVR").version
             self.logger.info(f"Separator version {package_version} instantiating with output_dir: {output_dir}, output_format: {output_format}")
 
-        self.model_file_dir = model_file_dir
-
         if output_dir is None:
             output_dir = os.getcwd()
             if not info_only:
                 self.logger.info("Output directory not specified. Using current working directory.")
 
         self.output_dir = output_dir
+
+        # Check for environment variable to override model_file_dir
+        env_model_dir = os.environ.get("POLUVR_MODEL_DIR")
+        if env_model_dir:
+            self.model_file_dir = env_model_dir
+            self.logger.info(f"Using model directory from POLUVR_MODEL_DIR env var: {self.model_file_dir}")
+            if not os.path.exists(self.model_file_dir):
+                raise FileNotFoundError(f"The specified model directory does not exist: {self.model_file_dir}")
+        else:
+            self.logger.info(f"Using model directory from model_file_dir parameter: {model_file_dir}")
+            self.model_file_dir = model_file_dir
 
         # Create the model directory if it does not exist
         os.makedirs(self.model_file_dir, exist_ok=True)
@@ -332,18 +342,34 @@ class Separator:
         This method returns the MD5 hash of a given model file.
         """
         self.logger.debug(f"Calculating hash of model file {model_path}")
+
+        # Use the specific byte count from the original logic
+        BYTES_TO_HASH = 10000 * 1024  # 10,240,000 bytes
         try:
-            # Open the model file in binary read mode
+            file_size = os.path.getsize(model_path)
             with open(model_path, "rb") as f:
-                # Move the file pointer 10MB before the end of the file
-                f.seek(-10000 * 1024, 2)
-                # Read the file from the current pointer to the end and calculate its MD5 hash
-                return hashlib.md5(f.read()).hexdigest()
-        except IOError as e:
-            # If an IOError occurs (e.g., if the file is less than 10MB large), log the error
-            self.logger.error(f"IOError seeking -10MB or reading model file for hash calculation: {e}")
-            # Attempt to open the file again, read its entire content, and calculate the MD5 hash
-            return hashlib.md5(open(model_path, "rb").read()).hexdigest()
+                if file_size < BYTES_TO_HASH:
+                    # Hash the entire file if smaller than the target byte count
+                    self.logger.debug(f"File size {file_size} < {BYTES_TO_HASH}, hashing entire file.")
+                    hash_value = hashlib.md5(f.read()).hexdigest()
+                else:
+                    # Seek to the specific position before the end (from the beginning) and hash
+                    seek_pos = file_size - BYTES_TO_HASH
+                    self.logger.debug(f"File size {file_size} >= {BYTES_TO_HASH}, seeking to {seek_pos} and hashing remaining bytes.")
+                    f.seek(seek_pos, io.SEEK_SET)
+                    hash_value = hashlib.md5(f.read()).hexdigest()
+
+            # Log the calculated hash
+            self.logger.info(f"Hash of model file {model_path} is {hash_value}")
+            return hash_value
+
+        except FileNotFoundError:
+            self.logger.error(f"Model file not found at {model_path}")
+            raise # Re-raise the specific error
+        except Exception as e:
+            # Catch other potential errors (e.g., permissions, other IOErrors)
+            self.logger.error(f"Error calculating hash for {model_path}: {e}")
+            raise # Re-raise other errors
 
     def download_file_if_not_exists(self, url, output_path):
         """
@@ -482,6 +508,9 @@ class Separator:
                 if model_filename == model_info["filename"]:
                     self.logger.debug(f"Found matching model: {model_friendly_name}")
                     self.model_friendly_name = model_friendly_name
+
+                    # Set the VIP flag based on the model name
+                    self.model_is_uvr_vip = "VIP" in model_friendly_name
                     self.print_uvr_vip_message()
 
                     # Download each required file for this model
