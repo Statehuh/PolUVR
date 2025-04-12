@@ -32,7 +32,7 @@ classifiers = [
 [tool.poetry.dependencies]
 python = ">=3.10"
 requests = ">=2"
-numpy = ">=2"
+numpy = ">=1.23"
 librosa = ">=0.10"
 samplerate = "0.1.0"
 six = ">=1.16"
@@ -65,11 +65,6 @@ gpu = ["onnxruntime-gpu"]
 PolUVR = 'PolUVR.utils.cli:main'
 PolUVR-app = 'PolUVR.utils.app:main'
 PolUVR-ffmpeg = 'tools.install_ffmpeg:main'
-
-[[tool.poetry.source]]
-name = "test"
-url = "https://test.pypi.org/simple/"
-priority = "explicit"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "*"
