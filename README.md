@@ -119,12 +119,12 @@ PolUVR_UI()
 ```
 
 The `PolUVR_UI` function supports two optional parameters:
-- **`default_model_file_dir`:** (Optional) Directory path for downloading models. `Default: /tmp/PolUVR-models/`
-- **`default_output_dir`:** (Optional) Directory path for saving separation results. `Default: output`
+- **`model_dir`:** (Optional) Directory path for downloading models. `Default: /tmp/PolUVR-models/`
+- **`output_dir`:** (Optional) Directory path for saving separation results. `Default: output`
 
 The default parameter values are configured as follows:
 ```python
-PolUVR_UI(default_model_file_dir="/tmp/PolUVR-models/", default_output_dir="output")
+PolUVR_UI(model_dir="/tmp/PolUVR-models/", output_dir="output")
 ```
 
 To customize storage locations for model files and output results according to your project structure, specify alternative default paths:

@@ -10,49 +10,106 @@ import gradio as gr
 from PolUVR.separator import Separator
 from UVR_resources import DEMUCS_v4_MODELS, VR_ARCH_MODELS, MDXNET_MODELS, MDX23C_MODELS, ROFORMER_MODELS
 
-device = "cuda" if torch.cuda.is_available() else "cpu"
-use_autocast = device == "cuda"
+# Constants
+DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+USE_AUTOCAST = DEVICE == "cuda"
 
-OUTPUT_FORMAT = ["wav", "flac", "mp3", "ogg", "opus", "m4a", "aiff", "ac3"]
+OUTPUT_FORMATS = ["wav", "flac", "mp3", "ogg", "opus", "m4a", "aiff", "ac3"]
+STEMS = [
+    "vocals", "male", "female", "aspiration", "crowd",
+    "instrumental", "drums", "kick", "snare", "toms", "hh", "ride",
+    "crash", "bass", "drum-bass", "guitar", "piano", "woodwinds",
+    "echo", "reverb", "noise", "dry", "other"
+]
+
 
 def reset_stems():
-    """Resets all audio components before new separation"""
+    """Resets all audio components before new separation."""
     return [gr.update(value=None, visible=False) for _ in range(6)]
 
-def print_message(input_file, model_name):
+
+def print_process_info(input_file, model_name):
     """Prints information about the audio separation process."""
     base_name = os.path.splitext(os.path.basename(input_file))[0]
-    print("\n")
-    print("🎵 PolUVR 🎵")
-    print("Input file:", base_name)
-    print("Model used:", model_name)
+    print("\n🎵 PolUVR 🎵")
+    print(f"Input file: {base_name}")
+    print(f"Model used: {model_name}")
     print("Audio separation in progress...")
 
-def prepare_output_dir(input_file, output_dir):
-    """Creates a directory to save the results and clears it if it already exists."""
-    base_name = os.path.splitext(os.path.basename(input_file))[0]
-    out_dir = os.path.join(output_dir, base_name)
-    try:
-        if os.path.exists(out_dir):
-            shutil.rmtree(out_dir)
-        os.makedirs(out_dir)
-    except Exception as e:
-        raise RuntimeError(f"Error creating output directory {out_dir}: {e}") from e
-    return out_dir
 
-def rename_all_stems(audio, rename_stems, model):
-    base_name = os.path.splitext(os.path.basename(audio))[0]
-    stems = {"All Stems": rename_stems.replace("NAME", base_name).replace("STEM", "All Stems").replace("MODEL", model)}
+def prepare_output_directory(input_file, output_directory):
+    """Creates a directory to save the results and clears it if it exists."""
+    base_name = os.path.splitext(os.path.basename(input_file))[0]
+    output_dir = os.path.join(output_directory, base_name)
+
+    try:
+        if os.path.exists(output_dir):
+            shutil.rmtree(output_dir)
+        os.makedirs(output_dir)
+    except Exception as e:
+        raise gr.Error(f"Error creating output directory {output_dir}: {e}") from e
+
+    return output_dir
+
+
+def generate_stem_names(audio_path, name_template, model_name):
+    """Generates stem names based on the template."""
+    base_name = os.path.splitext(os.path.basename(audio_path))[0]
+    return {"All Stems": name_template.replace("NAME", base_name).replace("STEM", "All Stems").replace("MODEL", model_name)}
+
+
+def show_hide_parameter(visible):
+    """Updates the visibility of a parameter based on checkbox state."""
+    return gr.update(visible=visible)
+
+
+def clear_model_files(model_dir):
+    """Deletes all model files from the specified directory."""
+    try:
+        for filename in os.listdir(model_dir):
+            if filename.endswith((".th", ".pth", ".onnx", ".ckpt", ".json", ".yaml")):
+                file_path = os.path.join(model_dir, filename)
+                os.remove(file_path)
+        return gr.Info("Models successfully cleared from memory.")
+    except Exception as e:
+        raise gr.Error(f"Error deleting models: {e}")
+
+
+def process_separation_results(separation_results, output_dir):
+    """Process separation results and prepare outputs for UI components."""
+    stems = [os.path.join(output_dir, file_name) for file_name in separation_results]
+
+    outputs = []
+    for i in range(6):
+        if i < len(stems):
+            outputs.append(gr.update(value=stems[i], visible=True, label=f"Stem {i+1} ({os.path.basename(stems[i])})"))
+        else:
+            outputs.append(gr.update(visible=False))
+
+    return outputs
+
+
+def create_stems_display():
+    """Creates a 2-column stems display for the UI."""
+    stems = []
+    with gr.Column():
+        for i in range(0, 6, 2):
+            with gr.Row():
+                stems.append(gr.Audio(visible=False, interactive=False, label=f"Stem {i+1}"))
+                stems.append(gr.Audio(visible=False, interactive=False, label=f"Stem {i+2}"))
     return stems
 
-def leaderboard(list_filter, list_limit):
+
+def display_leaderboard(list_filter, list_limit):
+    """Displays the model leaderboard."""
     try:
         result = subprocess.run(
             ["PolUVR", "-l", f"--list_filter={list_filter}", f"--list_limit={list_limit}"],
             capture_output=True,
             text=True,
-            check=True,
+            check=True
         )
+
         if result.returncode != 0:
             return f"Error: {result.stderr}"
 
@@ -66,50 +123,28 @@ def leaderboard(list_filter, list_limit):
     except Exception as e:
         return f"Error: {e}"
 
-def process_separation_results(separation, out_dir):
-    """Process separation results and prepare outputs for UI components."""
-    stems = [os.path.join(out_dir, file_name) for file_name in separation]
 
-    outputs = []
-    for i in range(6):
-        if i < len(stems):
-            outputs.append(gr.update(value=stems[i], visible=True, label=f"Stem {i+1} ({os.path.basename(stems[i])}"))
-        else:
-            outputs.append(gr.update(visible=False))
-
-    return outputs
-
-def create_stems_display():
-    """Helper function to create 2-column stems display"""
-    stems = []
-    with gr.Column():
-        for i in range(0, 6, 2):
-            with gr.Row():
-                stems.append(gr.Audio(visible=False, interactive=False, label=f"Stem {i+1}"))
-                stems.append(gr.Audio(visible=False, interactive=False, label=f"Stem {i+2}"))
-    return stems
-
-def roformer_separator(audio, model_key, seg_size, override_seg_size, overlap, pitch_shift, model_dir, out_dir, out_format, norm_thresh, amp_thresh, batch_size, rename_stems, progress=gr.Progress(track_tqdm=True)):
+def run_roformer_separation(audio_path, model_key, segment_size, override_segment_size, overlap, pitch_shift, model_dir, output_dir, output_format, norm_threshold, amp_threshold, batch_size, rename_template, progress=gr.Progress(track_tqdm=True)):
     """Performs audio separation using the Roformer model."""
     yield reset_stems()
 
-    stemname = rename_all_stems(audio, rename_stems, model_key)
-    print_message(audio, model_key)
-    model = ROFORMER_MODELS[model_key]
+    stem_names = generate_stem_names(audio_path, rename_template, model_key)
+    model_filename = ROFORMER_MODELS[model_key]
+    print_process_info(audio_path, model_key)
 
     try:
-        out_dir = prepare_output_dir(audio, out_dir)
+        out_dir = prepare_output_directory(audio_path, output_dir)
         separator = Separator(
             log_level=logging.WARNING,
             model_file_dir=model_dir,
             output_dir=out_dir,
-            output_format=out_format,
-            normalization_threshold=norm_thresh,
-            amplification_threshold=amp_thresh,
-            use_autocast=use_autocast,
+            output_format=output_format,
+            normalization_threshold=norm_threshold,
+            amplification_threshold=amp_threshold,
+            use_autocast=USE_AUTOCAST,
             mdxc_params={
-                "segment_size": seg_size,
-                "override_model_segment_size": override_seg_size,
+                "segment_size": segment_size,
+                "override_model_segment_size": override_segment_size,
                 "batch_size": batch_size,
                 "overlap": overlap,
                 "pitch_shift": pitch_shift,
@@ -117,37 +152,38 @@ def roformer_separator(audio, model_key, seg_size, override_seg_size, overlap, p
         )
 
         progress(0.2, desc="Model loading...")
-        separator.load_model(model_filename=model)
+        separator.load_model(model_filename=model_filename)
 
         progress(0.7, desc="Audio separation...")
-        separation = separator.separate(audio, stemname)
-        print(f"Separation complete!\nResults: {', '.join(separation)}")
+        results = separator.separate(audio_path, stem_names)
+        print(f"Separation complete!\nResults: {', '.join(results)}")
 
-        yield process_separation_results(separation, out_dir)
+        yield process_separation_results(results, out_dir)
     except Exception as e:
         raise gr.Error(f"Error separating audio with Roformer: {e}") from e
 
-def mdx23c_separator(audio, model_key, seg_size, override_seg_size, overlap, pitch_shift, model_dir, out_dir, out_format, norm_thresh, amp_thresh, batch_size, rename_stems, progress=gr.Progress(track_tqdm=True)):
+
+def run_mdx23c_separation(audio_path, model_key, segment_size, override_segment_size, overlap, pitch_shift, model_dir, output_dir, output_format, norm_threshold, amp_threshold, batch_size, rename_template, progress=gr.Progress(track_tqdm=True)):
     """Performs audio separation using the MDX23C model."""
     yield reset_stems()
 
-    stemname = rename_all_stems(audio, rename_stems, model_key)
-    print_message(audio, model_key)
-    model = MDX23C_MODELS[model_key]
+    stem_names = generate_stem_names(audio_path, rename_template, model_key)
+    model_filename = MDX23C_MODELS[model_key]
+    print_process_info(audio_path, model_key)
 
     try:
-        out_dir = prepare_output_dir(audio, out_dir)
+        out_dir = prepare_output_directory(audio_path, output_dir)
         separator = Separator(
             log_level=logging.WARNING,
             model_file_dir=model_dir,
             output_dir=out_dir,
-            output_format=out_format,
-            normalization_threshold=norm_thresh,
-            amplification_threshold=amp_thresh,
-            use_autocast=use_autocast,
+            output_format=output_format,
+            normalization_threshold=norm_threshold,
+            amplification_threshold=amp_threshold,
+            use_autocast=USE_AUTOCAST,
             mdxc_params={
-                "segment_size": seg_size,
-                "override_model_segment_size": override_seg_size,
+                "segment_size": segment_size,
+                "override_model_segment_size": override_segment_size,
                 "batch_size": batch_size,
                 "overlap": overlap,
                 "pitch_shift": pitch_shift,
@@ -155,37 +191,38 @@ def mdx23c_separator(audio, model_key, seg_size, override_seg_size, overlap, pit
         )
 
         progress(0.2, desc="Model loading...")
-        separator.load_model(model_filename=model)
+        separator.load_model(model_filename=model_filename)
 
         progress(0.7, desc="Audio separation...")
-        separation = separator.separate(audio, stemname)
-        print(f"Separation complete!\nResults: {', '.join(separation)}")
+        results = separator.separate(audio_path, stem_names)
+        print(f"Separation complete!\nResults: {', '.join(results)}")
 
-        yield process_separation_results(separation, out_dir)
+        yield process_separation_results(results, out_dir)
     except Exception as e:
         raise gr.Error(f"Error separating audio with MDX23C: {e}") from e
 
-def mdx_separator(audio, model_key, hop_length, seg_size, overlap, denoise, model_dir, out_dir, out_format, norm_thresh, amp_thresh, batch_size, rename_stems, progress=gr.Progress(track_tqdm=True)):
+
+def run_mdx_separation(audio_path, model_key, hop_length, segment_size, overlap, denoise, model_dir, output_dir, output_format, norm_threshold, amp_threshold, batch_size, rename_template, progress=gr.Progress(track_tqdm=True)):
     """Performs audio separation using the MDX-NET model."""
     yield reset_stems()
 
-    stemname = rename_all_stems(audio, rename_stems, model_key)
-    print_message(audio, model_key)
-    model = MDXNET_MODELS[model_key]
+    stem_names = generate_stem_names(audio_path, rename_template, model_key)
+    model_filename = MDXNET_MODELS[model_key]
+    print_process_info(audio_path, model_key)
 
     try:
-        out_dir = prepare_output_dir(audio, out_dir)
+        out_dir = prepare_output_directory(audio_path, output_dir)
         separator = Separator(
             log_level=logging.WARNING,
             model_file_dir=model_dir,
             output_dir=out_dir,
-            output_format=out_format,
-            normalization_threshold=norm_thresh,
-            amplification_threshold=amp_thresh,
-            use_autocast=use_autocast,
+            output_format=output_format,
+            normalization_threshold=norm_threshold,
+            amplification_threshold=amp_threshold,
+            use_autocast=USE_AUTOCAST,
             mdx_params={
                 "hop_length": hop_length,
-                "segment_size": seg_size,
+                "segment_size": segment_size,
                 "overlap": overlap,
                 "batch_size": batch_size,
                 "enable_denoise": denoise,
@@ -193,76 +230,78 @@ def mdx_separator(audio, model_key, hop_length, seg_size, overlap, denoise, mode
         )
 
         progress(0.2, desc="Model loading...")
-        separator.load_model(model_filename=model)
+        separator.load_model(model_filename=model_filename)
 
         progress(0.7, desc="Audio separation...")
-        separation = separator.separate(audio, stemname)
-        print(f"Separation complete!\nResults: {', '.join(separation)}")
+        results = separator.separate(audio_path, stem_names)
+        print(f"Separation complete!\nResults: {', '.join(results)}")
 
-        yield process_separation_results(separation, out_dir)
+        yield process_separation_results(results, out_dir)
     except Exception as e:
         raise gr.Error(f"Error separating audio with MDX-NET: {e}") from e
 
-def vr_separator(audio, model_key, window_size, aggression, tta, post_process, post_process_threshold, high_end_process, model_dir, out_dir, out_format, norm_thresh, amp_thresh, batch_size, rename_stems, progress=gr.Progress(track_tqdm=True)):
+
+def run_vr_separation(audio_path, model_key, window_size, aggression, enable_tta, enable_post_process, post_process_threshold, high_end_process, model_dir, output_dir, output_format, norm_threshold, amp_threshold, batch_size, rename_template, progress=gr.Progress(track_tqdm=True)):
     """Performs audio separation using the VR ARCH model."""
     yield reset_stems()
 
-    stemname = rename_all_stems(audio, rename_stems, model_key)
-    print_message(audio, model_key)
-    model = VR_ARCH_MODELS[model_key]
+    stem_names = generate_stem_names(audio_path, rename_template, model_key)
+    model_filename = VR_ARCH_MODELS[model_key]
+    print_process_info(audio_path, model_key)
 
     try:
-        out_dir = prepare_output_dir(audio, out_dir)
+        out_dir = prepare_output_directory(audio_path, output_dir)
         separator = Separator(
             log_level=logging.WARNING,
             model_file_dir=model_dir,
             output_dir=out_dir,
-            output_format=out_format,
-            normalization_threshold=norm_thresh,
-            amplification_threshold=amp_thresh,
-            use_autocast=use_autocast,
+            output_format=output_format,
+            normalization_threshold=norm_threshold,
+            amplification_threshold=amp_threshold,
+            use_autocast=USE_AUTOCAST,
             vr_params={
                 "batch_size": batch_size,
                 "window_size": window_size,
                 "aggression": aggression,
-                "enable_tta": tta,
-                "enable_post_process": post_process,
+                "enable_tta": enable_tta,
+                "enable_post_process": enable_post_process,
                 "post_process_threshold": post_process_threshold,
                 "high_end_process": high_end_process,
             },
         )
 
         progress(0.2, desc="Model loading...")
-        separator.load_model(model_filename=model)
+        separator.load_model(model_filename=model_filename)
 
         progress(0.7, desc="Audio separation...")
-        separation = separator.separate(audio, stemname)
-        print(f"Separation complete!\nResults: {', '.join(separation)}")
+        results = separator.separate(audio_path, stem_names)
+        print(f"Separation complete!\nResults: {', '.join(results)}")
 
-        yield process_separation_results(separation, out_dir)
+        yield process_separation_results(results, out_dir)
     except Exception as e:
         raise gr.Error(f"Error separating audio with VR ARCH: {e}") from e
 
-def demucs_separator(audio, model_key, seg_size, shifts, overlap, segments_enabled, model_dir, out_dir, out_format, norm_thresh, amp_thresh, rename_stems, progress=gr.Progress(track_tqdm=True)):
+
+def run_demucs_separation(audio_path, model_key, segment_size, shifts, overlap, segments_enabled, model_dir, output_dir, output_format, norm_threshold, amp_threshold, rename_template, progress=gr.Progress(track_tqdm=True)):
     """Performs audio separation using the Demucs model."""
     yield reset_stems()
 
-    stemname = rename_all_stems(audio, rename_stems, model_key)
-    print_message(audio, model_key)
-    model = DEMUCS_v4_MODELS[model_key]
+    stem_names = generate_stem_names(audio_path, rename_template, model_key)
+    model_filename = DEMUCS_v4_MODELS[model_key]
+    print_process_info(audio_path, model_key)
 
     try:
-        out_dir = prepare_output_dir(audio, out_dir)
+        out_dir = prepare_output_directory(audio_path, output_dir)
         separator = Separator(
             log_level=logging.WARNING,
             model_file_dir=model_dir,
             output_dir=out_dir,
-            output_format=out_format,
-            normalization_threshold=norm_thresh,
-            amplification_threshold=amp_thresh,
-            use_autocast=use_autocast,
+            output_format=output_format,
+            normalization_threshold=norm_threshold,
+            amplification_threshold=amp_threshold,
+            use_autocast=USE_AUTOCAST,
             demucs_params={
-                "segment_size": seg_size,
+                "segment_size": segment_size,
                 "shifts": shifts,
                 "overlap": overlap,
                 "segments_enabled": segments_enabled,
@@ -270,37 +309,24 @@ def demucs_separator(audio, model_key, seg_size, shifts, overlap, segments_enabl
         )
 
         progress(0.2, desc="Model loading...")
-        separator.load_model(model_filename=model)
+        separator.load_model(model_filename=model_filename)
 
         progress(0.7, desc="Audio separation...")
-        separation = separator.separate(audio, stemname)
-        print(f"Separation complete!\nResults: {', '.join(separation)}")
+        results = separator.separate(audio_path, stem_names)
+        print(f"Separation complete!\nResults: {', '.join(results)}")
 
-        yield process_separation_results(separation, out_dir)
+        yield process_separation_results(results, out_dir)
     except Exception as e:
         raise gr.Error(f"Error separating audio with Demucs: {e}") from e
 
-def show_hide_params(param):
-    """Updates the visibility of a parameter based on the checkbox state."""
-    return gr.update(visible=param)
 
-def clear_models(model_dir):
-    """Deletes all model files from the specified directory."""
-    try:
-        for filename in os.listdir(model_dir):
-            if filename.endswith((".th", ".pth", ".onnx", ".ckpt", ".json", ".yaml")):
-                file_path = os.path.join(model_dir, filename)
-                os.remove(file_path)
-        return gr.Info("Models successfully cleared from memory.")
-    except Exception as e:
-        return gr.Error(f"Error deleting models: {e}")
-
-def PolUVR_UI(default_model_file_dir="/tmp/PolUVR-models/", default_output_dir="output"):
+def PolUVR_UI(model_dir="/tmp/PolUVR-models/", output_dir="output"):
+    """Creates the Gradio UI for PolUVR application."""
     with gr.Tab("Roformer"):
         with gr.Group():
             with gr.Row():
                 roformer_model = gr.Dropdown(value="MelBand Roformer Kim | Big Beta v5e FT by Unwa", label="Model", choices=list(ROFORMER_MODELS.keys()), scale=3)
-                roformer_output_format = gr.Dropdown(value="wav", choices=OUTPUT_FORMAT, label="Output File Format", scale=1)
+                roformer_output_format = gr.Dropdown(value="wav", choices=OUTPUT_FORMATS, label="Output File Format", scale=1)
             with gr.Accordion("Separation Parameters", open=False):
                 with gr.Column(variant="panel"):
                     with gr.Group():
@@ -325,7 +351,7 @@ def PolUVR_UI(default_model_file_dir="/tmp/PolUVR-models/", default_output_dir="
         with gr.Group():
             with gr.Row():
                 mdx23c_model = gr.Dropdown(value="MDX23C InstVoc HQ", label="Model", choices=list(MDX23C_MODELS.keys()), scale=3)
-                mdx23c_output_format = gr.Dropdown(value="wav", choices=OUTPUT_FORMAT, label="Output File Format", scale=1)
+                mdx23c_output_format = gr.Dropdown(value="wav", choices=OUTPUT_FORMATS, label="Output File Format", scale=1)
             with gr.Accordion("Separation Parameters", open=False):
                 with gr.Column(variant="panel"):
                     with gr.Group():
@@ -350,7 +376,7 @@ def PolUVR_UI(default_model_file_dir="/tmp/PolUVR-models/", default_output_dir="
         with gr.Group():
             with gr.Row():
                 mdx_model = gr.Dropdown(value="UVR-MDX-NET Inst HQ 5", label="Model", choices=list(MDXNET_MODELS.keys()), scale=3)
-                mdx_output_format = gr.Dropdown(value="wav", choices=OUTPUT_FORMAT, label="Output File Format", scale=1)
+                mdx_output_format = gr.Dropdown(value="wav", choices=OUTPUT_FORMATS, label="Output File Format", scale=1)
             with gr.Accordion("Separation Parameters", open=False):
                 with gr.Column(variant="panel"):
                     with gr.Group():
@@ -375,7 +401,7 @@ def PolUVR_UI(default_model_file_dir="/tmp/PolUVR-models/", default_output_dir="
         with gr.Group():
             with gr.Row():
                 vr_model = gr.Dropdown(value="1_HP-UVR", label="Model", choices=list(VR_ARCH_MODELS.keys()), scale=3)
-                vr_output_format = gr.Dropdown(value="wav", choices=OUTPUT_FORMAT, label="Output File Format", scale=1)
+                vr_output_format = gr.Dropdown(value="wav", choices=OUTPUT_FORMATS, label="Output File Format", scale=1)
             with gr.Accordion("Separation Parameters", open=False):
                 with gr.Column(variant="panel"):
                     with gr.Group():
@@ -403,7 +429,7 @@ def PolUVR_UI(default_model_file_dir="/tmp/PolUVR-models/", default_output_dir="
         with gr.Group():
             with gr.Row():
                 demucs_model = gr.Dropdown(value="htdemucs_ft", label="Model", choices=list(DEMUCS_v4_MODELS.keys()), scale=3)
-                demucs_output_format = gr.Dropdown(value="wav", choices=OUTPUT_FORMAT, label="Output File Format", scale=1)
+                demucs_output_format = gr.Dropdown(value="wav", choices=OUTPUT_FORMATS, label="Output File Format", scale=1)
             with gr.Accordion("Separation Parameters", open=False):
                 with gr.Column(variant="panel"):
                     with gr.Group():
@@ -426,55 +452,56 @@ def PolUVR_UI(default_model_file_dir="/tmp/PolUVR-models/", default_output_dir="
     with gr.Tab("Settings"):
         with gr.Row():
             with gr.Column(variant="panel"):
-                model_file_dir = gr.Textbox(value=default_model_file_dir, label="Model Directory", info="Specify the path to store model files.", placeholder="models/UVR_models")
+                model_file_dir = gr.Textbox(value=model_dir, label="Model Directory", info="Specify the path to store model files.", placeholder="models/UVR_models")
                 gr.HTML("""<div style="margin: -10px 0!important; text-align: center">The button below will delete all previously installed models from your device.</div>""")
                 clear_models_button = gr.Button("Remove models from memory", variant="primary")
             with gr.Column(variant="panel"):
-                output_dir = gr.Textbox(value=default_output_dir, label="Output Directory", info="Specify the path to save output files.", placeholder="output/UVR_output")
+                output_dir = gr.Textbox(value=output_dir, label="Output Directory", info="Specify the path to save output files.", placeholder="output/UVR_output")
 
-        with gr.Column():
-            with gr.Group():
-                gr.Markdown(
-                    """
-                    > Use keys to automatically format output file names.
+        with gr.Accordion("Rename Stems", open=False):
+            with gr.Column():
+                with gr.Group():
+                    gr.Markdown(
+                        """
+                        > Use keys to automatically format output file names.
 
-                    > Available keys:
-                    > * **NAME** - Input file name
-                    > * **STEM** - Stem type (e.g., Vocals, Instrumental)
-                    > * **MODEL** - Model name (e.g., BS-Roformer-Viperx-1297)
+                        > Available keys:
+                        > * **NAME** - Input file name
+                        > * **STEM** - Stem type (e.g., Vocals, Instrumental)
+                        > * **MODEL** - Model name (e.g., BS-Roformer-Viperx-1297)
 
-                    > Example:
-                    > * **Template:** NAME_(STEM)_MODEL
-                    > * **Result:** Music_(Vocals)_BS-Roformer-Viperx-1297
-                    
-                    <div style="color: red; font-weight: bold; background-color: #ffecec; padding: 10px; border-left: 3px solid red; margin: 10px 0;">
-                    ⚠️ WARNING: This line changes the names of all output files at once. 
-                    Use ONLY the specified keys (NAME, STEM, MODEL) to avoid corrupting the files. 
-                    Do NOT add any extra text or characters outside these keys, or do so with caution.
-                    </div>
-                    """
-                )
-                rename_stems = gr.Textbox(value="NAME_(STEM)_MODEL", label="Rename Stems", placeholder="NAME_(STEM)_MODEL")
+                        > Example:
+                        > * **Template:** NAME_(STEM)_MODEL
+                        > * **Result:** Music_(Vocals)_BS-Roformer-Viperx-1297
+                        
+                        <div style="color: red; font-weight: bold; background-color: #ffecec; padding: 10px; border-left: 3px solid red; margin: 10px 0;">
+                        ⚠️ WARNING: This line changes the names of all output files at once. 
+                        Use ONLY the specified keys (NAME, STEM, MODEL) to avoid corrupting the files. 
+                        Do NOT add any extra text or characters outside these keys, or do so with caution.
+                        </div>
+                        """
+                    )
+                    rename_stems = gr.Textbox(value="NAME_(STEM)_MODEL", label="Rename Stems", placeholder="NAME_(STEM)_MODEL")
 
     with gr.Tab("Leaderboard"):
         with gr.Group():
             with gr.Row(equal_height=True):
-                list_filter = gr.Dropdown(value="vocals", choices=["vocals", "instrumental", "drums", "bass", "guitar", "piano", "other"], label="Filter", info="Filter models by stem type.")
+                list_filter = gr.Dropdown(value="vocals", choices=STEMS, label="Filter", info="Filter models by stem type.")
                 list_limit = gr.Slider(minimum=1, maximum=10, step=1, value=5, label="Limit", info="Limit the number of displayed models.")
                 list_button = gr.Button("Refresh List", variant="primary")
 
         output_list = gr.HTML(label="Leaderboard")
 
     # Event handlers
-    roformer_override_seg_size.change(show_hide_params, inputs=[roformer_override_seg_size], outputs=[roformer_seg_size])
-    mdx23c_override_seg_size.change(show_hide_params, inputs=[mdx23c_override_seg_size], outputs=[mdx23c_seg_size])
-    vr_post_process.change(show_hide_params, inputs=[vr_post_process], outputs=[vr_post_process_threshold])
-    list_button.click(leaderboard, inputs=[list_filter, list_limit], outputs=output_list)
-    clear_models_button.click(clear_models, inputs=[model_file_dir])
+    roformer_override_seg_size.change(show_hide_parameter, inputs=[roformer_override_seg_size], outputs=[roformer_seg_size])
+    mdx23c_override_seg_size.change(show_hide_parameter, inputs=[mdx23c_override_seg_size], outputs=[mdx23c_seg_size])
+    vr_post_process.change(show_hide_parameter, inputs=[vr_post_process], outputs=[vr_post_process_threshold])
+    list_button.click(display_leaderboard, inputs=[list_filter, list_limit], outputs=output_list)
+    clear_models_button.click(clear_model_files, inputs=[model_file_dir])
 
     # Separation buttons
     roformer_button.click(
-        roformer_separator,
+        run_roformer_separation,
         inputs=[
             roformer_audio,
             roformer_model,
@@ -495,7 +522,7 @@ def PolUVR_UI(default_model_file_dir="/tmp/PolUVR-models/", default_output_dir="
         api_name=False
     )
     mdx23c_button.click(
-        mdx23c_separator,
+        run_mdx23c_separation,
         inputs=[
             mdx23c_audio,
             mdx23c_model,
@@ -516,7 +543,7 @@ def PolUVR_UI(default_model_file_dir="/tmp/PolUVR-models/", default_output_dir="
         api_name=False
     )
     mdx_button.click(
-        mdx_separator,
+        run_mdx_separation,
         inputs=[
             mdx_audio,
             mdx_model,
@@ -537,7 +564,7 @@ def PolUVR_UI(default_model_file_dir="/tmp/PolUVR-models/", default_output_dir="
         api_name=False
     )
     vr_button.click(
-        vr_separator,
+        run_vr_separation,
         inputs=[
             vr_audio,
             vr_model,
@@ -560,7 +587,7 @@ def PolUVR_UI(default_model_file_dir="/tmp/PolUVR-models/", default_output_dir="
         api_name=False
     )
     demucs_button.click(
-        demucs_separator,
+        run_demucs_separation,
         inputs=[
             demucs_audio,
             demucs_model,
@@ -582,6 +609,7 @@ def PolUVR_UI(default_model_file_dir="/tmp/PolUVR-models/", default_output_dir="
 
 
 def main():
+    """Main function to launch the Gradio interface."""
     with gr.Blocks(
         title="🎵 PolUVR 🎵",
         css="footer{display:none !important}",
