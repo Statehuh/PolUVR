@@ -8,19 +8,11 @@ import subprocess
 import gradio as gr
 
 from PolUVR.separator import Separator
-from UVR_resources import DEMUCS_v4_MODELS, VR_ARCH_MODELS, MDXNET_MODELS, MDX23C_MODELS, ROFORMER_MODELS
+from UVR_resources import FORMATS, STEMS, DEMUCS_v4_MODELS, VR_ARCH_MODELS, MDXNET_MODELS, MDX23C_MODELS, ROFORMER_MODELS
 
 # Constants
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 USE_AUTOCAST = DEVICE == "cuda"
-
-OUTPUT_FORMATS = ["wav", "flac", "mp3", "ogg", "opus", "m4a", "aiff", "ac3"]
-STEMS = [
-    "vocals", "male", "female", "aspiration", "crowd",
-    "instrumental", "drums", "kick", "snare", "toms", "hh", "ride",
-    "crash", "bass", "drum-bass", "guitar", "piano", "woodwinds",
-    "echo", "reverb", "noise", "dry", "other"
-]
 
 
 def reset_stems():
@@ -326,7 +318,7 @@ def PolUVR_UI(model_dir="/tmp/PolUVR-models/", output_dir="output"):
         with gr.Group():
             with gr.Row():
                 roformer_model = gr.Dropdown(value="MelBand Roformer Kim | Big Beta v5e FT by Unwa", label="Model", choices=list(ROFORMER_MODELS.keys()), scale=3)
-                roformer_output_format = gr.Dropdown(value="wav", choices=OUTPUT_FORMATS, label="Output File Format", scale=1)
+                roformer_output_format = gr.Dropdown(value="wav", choices=FORMATS, label="Output File Format", scale=1)
             with gr.Accordion("Separation Parameters", open=False):
                 with gr.Column(variant="panel"):
                     with gr.Group():
@@ -351,7 +343,7 @@ def PolUVR_UI(model_dir="/tmp/PolUVR-models/", output_dir="output"):
         with gr.Group():
             with gr.Row():
                 mdx23c_model = gr.Dropdown(value="MDX23C InstVoc HQ", label="Model", choices=list(MDX23C_MODELS.keys()), scale=3)
-                mdx23c_output_format = gr.Dropdown(value="wav", choices=OUTPUT_FORMATS, label="Output File Format", scale=1)
+                mdx23c_output_format = gr.Dropdown(value="wav", choices=FORMATS, label="Output File Format", scale=1)
             with gr.Accordion("Separation Parameters", open=False):
                 with gr.Column(variant="panel"):
                     with gr.Group():
@@ -376,7 +368,7 @@ def PolUVR_UI(model_dir="/tmp/PolUVR-models/", output_dir="output"):
         with gr.Group():
             with gr.Row():
                 mdx_model = gr.Dropdown(value="UVR-MDX-NET Inst HQ 5", label="Model", choices=list(MDXNET_MODELS.keys()), scale=3)
-                mdx_output_format = gr.Dropdown(value="wav", choices=OUTPUT_FORMATS, label="Output File Format", scale=1)
+                mdx_output_format = gr.Dropdown(value="wav", choices=FORMATS, label="Output File Format", scale=1)
             with gr.Accordion("Separation Parameters", open=False):
                 with gr.Column(variant="panel"):
                     with gr.Group():
@@ -401,7 +393,7 @@ def PolUVR_UI(model_dir="/tmp/PolUVR-models/", output_dir="output"):
         with gr.Group():
             with gr.Row():
                 vr_model = gr.Dropdown(value="1_HP-UVR", label="Model", choices=list(VR_ARCH_MODELS.keys()), scale=3)
-                vr_output_format = gr.Dropdown(value="wav", choices=OUTPUT_FORMATS, label="Output File Format", scale=1)
+                vr_output_format = gr.Dropdown(value="wav", choices=FORMATS, label="Output File Format", scale=1)
             with gr.Accordion("Separation Parameters", open=False):
                 with gr.Column(variant="panel"):
                     with gr.Group():
@@ -429,7 +421,7 @@ def PolUVR_UI(model_dir="/tmp/PolUVR-models/", output_dir="output"):
         with gr.Group():
             with gr.Row():
                 demucs_model = gr.Dropdown(value="htdemucs_ft", label="Model", choices=list(DEMUCS_v4_MODELS.keys()), scale=3)
-                demucs_output_format = gr.Dropdown(value="wav", choices=OUTPUT_FORMATS, label="Output File Format", scale=1)
+                demucs_output_format = gr.Dropdown(value="wav", choices=FORMATS, label="Output File Format", scale=1)
             with gr.Accordion("Separation Parameters", open=False):
                 with gr.Column(variant="panel"):
                     with gr.Group():
