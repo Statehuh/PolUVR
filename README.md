@@ -1,7 +1,7 @@
 # PolUVR 🎶
 
 [![PyPI version](https://badge.fury.io/py/PolUVR.svg?icon=si%3Apython)](https://badge.fury.io/py/PolUVR)
-[![Open In Huggingface](https://huggingface.co/datasets/huggingface/badges/resolve/main/open-in-hf-spaces-sm.svg)](https://huggingface.co/spaces/Politrees/PolUVR)
+[![Open In Huggingface](https://huggingface.co/datasets/huggingface/badges/resolve/main/open-in-hf-spaces-sm.svg)](https://huggingface.co/spaces/Politrees/audio-separator_UVR)
 
 # Overview
 
@@ -323,7 +323,7 @@ output_files = separator.separate('path/to/audio_directory')
 ### Clone the Repository
 
 ```sh
-git clone https://github.com/Bebra777228/PolUVR.git
+git clone https://github.com/Politrees/PolUVR.git
 cd PolUVR
 ```
 

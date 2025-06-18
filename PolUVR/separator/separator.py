@@ -402,7 +402,7 @@ class Separator:
         Also includes model performance scores where available.
         """
         download_checks_path = os.path.join(self.model_file_dir, "model_list_links.json")
-        self.download_file_if_not_exists("https://raw.githubusercontent.com/Bebra777228/UVR_resources/main/UVR_resources/model_list_links.json", download_checks_path)
+        self.download_file_if_not_exists("https://raw.githubusercontent.com/Politrees/UVR_resources/main/UVR_resources/model_list_links.json", download_checks_path)
 
         model_downloads_list = json.load(open(download_checks_path, encoding="utf-8"))
         self.logger.debug(f"UVR model download list loaded")
@@ -556,7 +556,7 @@ class Separator:
         The correct parameters are identified by calculating the hash of the model file and looking up the hash in the UVR data files.
         """
         # Model data and configuration sources from UVR
-        model_data_url_prefix = "https://raw.githubusercontent.com/Bebra777228/UVR_resources/main/UVR_resources/model_data"
+        model_data_url_prefix = "https://raw.githubusercontent.com/Politrees/UVR_resources/main/UVR_resources/model_data"
 
         vr_model_data_url = f"{model_data_url_prefix}/vr_model_data.json"
         mdx_model_data_url = f"{model_data_url_prefix}/mdx_model_data.json"

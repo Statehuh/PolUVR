@@ -10,7 +10,7 @@ MODEL_CACHE_PATH = "/tmp/PolUVR-models"
 VR_MODEL_DATA_LOCAL_PATH = f"{MODEL_CACHE_PATH}/vr_model_data.json"
 MDX_MODEL_DATA_LOCAL_PATH = f"{MODEL_CACHE_PATH}/mdx_model_data.json"
 
-MODEL_DATA_URL_PREFIX = "https://raw.githubusercontent.com/Bebra777228/UVR_resources/main/model_data"
+MODEL_DATA_URL_PREFIX = "https://raw.githubusercontent.com/Politrees/UVR_resources/main/model_data"
 VR_MODEL_DATA_URL = f"{MODEL_DATA_URL_PREFIX}/vr_model_data.json"
 MDX_MODEL_DATA_URL = f"{MODEL_DATA_URL_PREFIX}/mdx_model_data.json"
 

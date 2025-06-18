@@ -4,16 +4,16 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "PolUVR"
-version = "1.8.0"
+version = "1.9.0"
 description = "Easy to use audio stem separation with a UI, using various models from UVR trained primarily by @Anjok07"
 authors = ["Politrees <artyom.0.bebroy@gmail.com>"]
 license = "MIT"
 readme = "README.md"
 packages = [{include = "PolUVR"}]
 include = ["PolUVR/separator/models.json"]
-homepage = "https://github.com/Bebra777228/PolUVR"
-repository = "https://github.com/Bebra777228/PolUVR"
-documentation = "https://github.com/Bebra777228/PolUVR/blob/main/README.md"
+homepage = "https://github.com/Politrees/PolUVR"
+repository = "https://github.com/Politrees/PolUVR"
+documentation = "https://github.com/Politrees/PolUVR/blob/main/README.md"
 keywords = ["audio", "sound", "karaoke"]
 classifiers = [
     "License :: OSI Approved :: MIT License",
