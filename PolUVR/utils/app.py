@@ -1,5 +1,6 @@
 import os
 import re
+import gc
 import sys
 import torch
 import shutil
@@ -118,14 +119,15 @@ def display_leaderboard(list_filter, list_limit):
 
 def run_roformer_separation(audio_path, model_key, segment_size, override_segment_size, overlap, pitch_shift, model_dir, output_dir, output_format, norm_threshold, amp_threshold, batch_size, rename_template, progress=gr.Progress(track_tqdm=True)):
     """Performs audio separation using the Roformer model."""
-    yield reset_stems()
-
-    stem_names = generate_stem_names(audio_path, rename_template, model_key)
-    model_filename = ROFORMER_MODELS[model_key]
-    print_process_info(audio_path, model_key)
-
     try:
+        yield reset_stems()
+
+        print_process_info(audio_path, model_key)
+
         out_dir = prepare_output_directory(audio_path, output_dir)
+        stem_names = generate_stem_names(audio_path, rename_template, model_key)
+
+        model_filename = ROFORMER_MODELS[model_key]
         separator = Separator(
             log_level=logging.WARNING,
             model_file_dir=model_dir,
@@ -153,18 +155,24 @@ def run_roformer_separation(audio_path, model_key, segment_size, override_segmen
         yield process_separation_results(results, out_dir)
     except Exception as e:
         raise gr.Error(f"Error separating audio with Roformer: {e}") from e
+    finally:
+        del separator
+        torch.cuda.empty_cache() if torch.cuda.is_available() else None
+        torch.mps.empty_cache() if torch.backends.mps.is_available() else None
+        gc.collect()
 
 
 def run_mdx23c_separation(audio_path, model_key, segment_size, override_segment_size, overlap, pitch_shift, model_dir, output_dir, output_format, norm_threshold, amp_threshold, batch_size, rename_template, progress=gr.Progress(track_tqdm=True)):
     """Performs audio separation using the MDX23C model."""
-    yield reset_stems()
-
-    stem_names = generate_stem_names(audio_path, rename_template, model_key)
-    model_filename = MDX23C_MODELS[model_key]
-    print_process_info(audio_path, model_key)
-
     try:
+        yield reset_stems()
+
+        print_process_info(audio_path, model_key)
+
         out_dir = prepare_output_directory(audio_path, output_dir)
+        stem_names = generate_stem_names(audio_path, rename_template, model_key)
+
+        model_filename = MDX23C_MODELS[model_key]
         separator = Separator(
             log_level=logging.WARNING,
             model_file_dir=model_dir,
@@ -192,18 +200,24 @@ def run_mdx23c_separation(audio_path, model_key, segment_size, override_segment_
         yield process_separation_results(results, out_dir)
     except Exception as e:
         raise gr.Error(f"Error separating audio with MDX23C: {e}") from e
+    finally:
+        del separator
+        torch.cuda.empty_cache() if torch.cuda.is_available() else None
+        torch.mps.empty_cache() if torch.backends.mps.is_available() else None
+        gc.collect()
 
 
 def run_mdx_separation(audio_path, model_key, hop_length, segment_size, overlap, denoise, model_dir, output_dir, output_format, norm_threshold, amp_threshold, batch_size, rename_template, progress=gr.Progress(track_tqdm=True)):
     """Performs audio separation using the MDX-NET model."""
-    yield reset_stems()
-
-    stem_names = generate_stem_names(audio_path, rename_template, model_key)
-    model_filename = MDXNET_MODELS[model_key]
-    print_process_info(audio_path, model_key)
-
     try:
+        yield reset_stems()
+
+        print_process_info(audio_path, model_key)
+
         out_dir = prepare_output_directory(audio_path, output_dir)
+        stem_names = generate_stem_names(audio_path, rename_template, model_key)
+
+        model_filename = MDXNET_MODELS[model_key]
         separator = Separator(
             log_level=logging.WARNING,
             model_file_dir=model_dir,
@@ -231,18 +245,24 @@ def run_mdx_separation(audio_path, model_key, hop_length, segment_size, overlap,
         yield process_separation_results(results, out_dir)
     except Exception as e:
         raise gr.Error(f"Error separating audio with MDX-NET: {e}") from e
+    finally:
+        del separator
+        torch.cuda.empty_cache() if torch.cuda.is_available() else None
+        torch.mps.empty_cache() if torch.backends.mps.is_available() else None
+        gc.collect()
 
 
 def run_vr_separation(audio_path, model_key, window_size, aggression, enable_tta, enable_post_process, post_process_threshold, high_end_process, model_dir, output_dir, output_format, norm_threshold, amp_threshold, batch_size, rename_template, progress=gr.Progress(track_tqdm=True)):
     """Performs audio separation using the VR ARCH model."""
-    yield reset_stems()
-
-    stem_names = generate_stem_names(audio_path, rename_template, model_key)
-    model_filename = VR_ARCH_MODELS[model_key]
-    print_process_info(audio_path, model_key)
-
     try:
+        yield reset_stems()
+
+        print_process_info(audio_path, model_key)
+
         out_dir = prepare_output_directory(audio_path, output_dir)
+        stem_names = generate_stem_names(audio_path, rename_template, model_key)
+
+        model_filename = VR_ARCH_MODELS[model_key]
         separator = Separator(
             log_level=logging.WARNING,
             model_file_dir=model_dir,
@@ -272,18 +292,24 @@ def run_vr_separation(audio_path, model_key, window_size, aggression, enable_tta
         yield process_separation_results(results, out_dir)
     except Exception as e:
         raise gr.Error(f"Error separating audio with VR ARCH: {e}") from e
+    finally:
+        del separator
+        torch.cuda.empty_cache() if torch.cuda.is_available() else None
+        torch.mps.empty_cache() if torch.backends.mps.is_available() else None
+        gc.collect()
 
 
 def run_demucs_separation(audio_path, model_key, segment_size, shifts, overlap, segments_enabled, model_dir, output_dir, output_format, norm_threshold, amp_threshold, rename_template, progress=gr.Progress(track_tqdm=True)):
     """Performs audio separation using the Demucs model."""
-    yield reset_stems()
-
-    stem_names = generate_stem_names(audio_path, rename_template, model_key)
-    model_filename = DEMUCS_v4_MODELS[model_key]
-    print_process_info(audio_path, model_key)
-
     try:
+        yield reset_stems()
+
+        print_process_info(audio_path, model_key)
+
         out_dir = prepare_output_directory(audio_path, output_dir)
+        stem_names = generate_stem_names(audio_path, rename_template, model_key)
+
+        model_filename = DEMUCS_v4_MODELS[model_key]
         separator = Separator(
             log_level=logging.WARNING,
             model_file_dir=model_dir,
@@ -310,6 +336,11 @@ def run_demucs_separation(audio_path, model_key, segment_size, shifts, overlap, 
         yield process_separation_results(results, out_dir)
     except Exception as e:
         raise gr.Error(f"Error separating audio with Demucs: {e}") from e
+    finally:
+        del separator
+        torch.cuda.empty_cache() if torch.cuda.is_available() else None
+        torch.mps.empty_cache() if torch.backends.mps.is_available() else None
+        gc.collect()
 
 
 def PolUVR_UI(model_dir="/tmp/PolUVR-models/", output_dir="output"):
