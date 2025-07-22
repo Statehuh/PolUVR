@@ -88,8 +88,8 @@ def create_stems_display():
     with gr.Column():
         for i in range(0, 6, 2):
             with gr.Row():
-                stems.append(gr.Audio(visible=False, interactive=False, label=f"Stem {i+1}"))
-                stems.append(gr.Audio(visible=False, interactive=False, label=f"Stem {i+2}"))
+                stems.append(gr.Audio(visible=False, interactive=False, label=f"Stem {i+1}", show_download_button=True, show_share_button=False))
+                stems.append(gr.Audio(visible=False, interactive=False, label=f"Stem {i+2}", show_download_button=True, show_share_button=False))
     return stems
 
 
@@ -365,7 +365,7 @@ def PolUVR_UI(model_dir="/tmp/PolUVR-models/", output_dir="output"):
                             roformer_norm_threshold = gr.Slider(minimum=0.1, maximum=1, step=0.1, value=0.9, label="Normalization Threshold", info="Threshold for normalizing audio volume.")
                             roformer_amp_threshold = gr.Slider(minimum=0.0, maximum=1, step=0.1, value=0.0, label="Amplification Threshold", info="Threshold for amplifying quiet parts of the audio.")
         with gr.Row():
-            roformer_audio = gr.Audio(label="Input Audio", type="filepath")
+            roformer_audio = gr.Audio(label="Input Audio", type="filepath", show_download_button=False, show_share_button=False)
         with gr.Row():
             roformer_button = gr.Button("Start Separation", variant="primary")
         roformer_stems = create_stems_display()
@@ -390,7 +390,7 @@ def PolUVR_UI(model_dir="/tmp/PolUVR-models/", output_dir="output"):
                             mdx23c_norm_threshold = gr.Slider(minimum=0.1, maximum=1, step=0.1, value=0.9, label="Normalization Threshold", info="Threshold for normalizing audio volume.")
                             mdx23c_amp_threshold = gr.Slider(minimum=0.0, maximum=1, step=0.1, value=0.0, label="Amplification Threshold", info="Threshold for amplifying quiet parts of the audio.")
         with gr.Row():
-            mdx23c_audio = gr.Audio(label="Input Audio", type="filepath")
+            mdx23c_audio = gr.Audio(label="Input Audio", type="filepath", show_download_button=False, show_share_button=False)
         with gr.Row():
             mdx23c_button = gr.Button("Start Separation", variant="primary")
         mdx23c_stems = create_stems_display()
@@ -415,7 +415,7 @@ def PolUVR_UI(model_dir="/tmp/PolUVR-models/", output_dir="output"):
                             mdx_norm_threshold = gr.Slider(minimum=0.1, maximum=1, step=0.1, value=0.9, label="Normalization Threshold", info="Threshold for normalizing audio volume.")
                             mdx_amp_threshold = gr.Slider(minimum=0.0, maximum=1, step=0.1, value=0.0, label="Amplification Threshold", info="Threshold for amplifying quiet parts of the audio.")
         with gr.Row():
-            mdx_audio = gr.Audio(label="Input Audio", type="filepath")
+            mdx_audio = gr.Audio(label="Input Audio", type="filepath", show_download_button=False, show_share_button=False)
         with gr.Row():
             mdx_button = gr.Button("Start Separation", variant="primary")
         mdx_stems = create_stems_display()
@@ -443,7 +443,7 @@ def PolUVR_UI(model_dir="/tmp/PolUVR-models/", output_dir="output"):
                             vr_norm_threshold = gr.Slider(minimum=0.1, maximum=1, step=0.1, value=0.9, label="Normalization Threshold", info="Threshold for normalizing audio volume.")
                             vr_amp_threshold = gr.Slider(minimum=0.0, maximum=1, step=0.1, value=0.0, label="Amplification Threshold", info="Threshold for amplifying quiet parts of the audio.")
         with gr.Row():
-            vr_audio = gr.Audio(label="Input Audio", type="filepath")
+            vr_audio = gr.Audio(label="Input Audio", type="filepath", show_download_button=False, show_share_button=False)
         with gr.Row():
             vr_button = gr.Button("Start Separation", variant="primary")
         vr_stems = create_stems_display()
@@ -467,7 +467,7 @@ def PolUVR_UI(model_dir="/tmp/PolUVR-models/", output_dir="output"):
                             demucs_norm_threshold = gr.Slider(minimum=0.1, maximum=1, step=0.1, value=0.9, label="Normalization Threshold", info="Threshold for normalizing audio volume.")
                             demucs_amp_threshold = gr.Slider(minimum=0.0, maximum=1, step=0.1, value=0.0, label="Amplification Threshold", info="Threshold for amplifying quiet parts of the audio.")
         with gr.Row():
-            demucs_audio = gr.Audio(label="Input Audio", type="filepath")
+            demucs_audio = gr.Audio(label="Input Audio", type="filepath", show_download_button=False, show_share_button=False)
         with gr.Row():
             demucs_button = gr.Button("Start Separation", variant="primary")
         demucs_stems = create_stems_display()
