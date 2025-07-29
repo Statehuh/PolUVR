@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "PolUVR"
-version = "1.9.1"
+version = "1.9.2"
 description = "Easy to use audio stem separation with a UI, using various models from UVR trained primarily by @Anjok07"
 authors = ["Politrees <artyom.0.bebroy@gmail.com>"]
 license = "MIT"
@@ -54,7 +54,7 @@ resampy = ">=0.4"
 beartype = "^0.18.5"
 rotary-embedding-torch = "^0.6.1"
 scipy = "^1.13.0"
-gradio = "*"
+gradio = "<=5.35.0"
 UVR_resources = "*"
 
 [tool.poetry.extras]
